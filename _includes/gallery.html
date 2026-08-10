@@ -1,0 +1,61 @@
+<div id="gallery" class="gallery-console" data-testid="gallery-console">
+<style>
+/* force scrollbar */
+html { overflow-y: scroll; }
+
+/* To overwrite page's padding, to get bigger images */
+/* article {padding:2%;} */
+</style>
+
+<div id='masonry' class="grid">
+<div class="grid-sizer"></div>
+<div class="gutter-sizer"></div>
+{% for image in site.static_files %}
+  {% if image.path contains include.gallery_path %}
+    {% unless image.path contains '.md' %}
+      {% assign filename = image.path | split: '/' | last %}
+      {% assign entry = site.data.gallery[filename] %}
+      {% assign base_name = filename | split: '.' | first | replace: '-', ' ' | replace: '_', ' ' | capitalize %}
+      {% assign alt_text = entry.alt | default: base_name %}
+      {% assign title_text = entry.title | default: base_name %}
+      {% assign description_text = entry.description %}
+      <button type="button" class="grid-item" data-testid="gallery-item"
+              data-full-src="{{ image.path | relative_url }}"
+              data-alt="{{ alt_text | escape }}"
+              data-title="{{ title_text | escape }}"
+              data-description="{{ description_text | escape }}"
+              aria-label="Open image: {{ title_text | escape }}">
+        <span class="grid-item__shape">
+          <img src="{{ image.path | relative_url }}" alt="{{ alt_text | escape }}" loading="lazy">
+          <span class="grid-item__caption">{{ title_text }}</span>
+        </span>
+      </button>
+    {% endunless %}
+  {% endif %}
+{% endfor %}
+</div>
+</div>
+
+<dialog id="gallery-lightbox" class="gallery-lightbox" data-testid="gallery-lightbox" aria-label="Image viewer">
+  <div class="gallery-lightbox__shape">
+    <button type="button" class="gallery-lightbox__close" data-action="close" aria-label="Close">
+      <i class="fas fa-xmark" aria-hidden="true"></i>
+    </button>
+    <button type="button" class="gallery-lightbox__nav gallery-lightbox__nav--prev" data-action="prev" aria-label="Previous image">
+      <i class="fas fa-chevron-left" aria-hidden="true"></i>
+    </button>
+    <figure class="gallery-lightbox__figure">
+      <img class="gallery-lightbox__image" src="" alt="">
+      <figcaption class="gallery-lightbox__caption">
+        <h3 class="gallery-lightbox__title"></h3>
+        <p class="gallery-lightbox__description"></p>
+      </figcaption>
+    </figure>
+    <button type="button" class="gallery-lightbox__nav gallery-lightbox__nav--next" data-action="next" aria-label="Next image">
+      <i class="fas fa-chevron-right" aria-hidden="true"></i>
+    </button>
+  </div>
+</dialog>
+
+<script src="{{ '/assets/js/vendor/imagesloaded.pkgd.min.js' | relative_url }}" type="text/javascript"></script>
+<script src="{{ '/assets/js/vendor/masonry.pkgd.min.js' | relative_url }}" type="text/javascript"></script>

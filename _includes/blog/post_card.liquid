@@ -1,0 +1,60 @@
+{% comment %}
+  Shared post-card teaser. Params:
+    post    - required, the post/page to render
+    cover   - optional cover image path, falls back to post.thumbnail / post["feature-img"] / site default
+    pinned  - optional bool, adds the post-card--pinned modifier
+    testid  - optional data-testid value (defaults to "post-card-teaser")
+
+  NB: Jekyll's {% include %} only reliably exposes params via `include.xxx` - bare names
+  are not bound in the include's own scope, so we re-assign to locals up front.
+{% endcomment %}
+{% assign post = include.post %}
+{% assign pinned = include.pinned %}
+{% assign testid = include.testid %}
+{% assign _default_cover = site.blog_default_cover_image | default: "assets/img/feature-img/desk-messy.jpeg" %}
+{% assign _cover = include.cover | default: post.thumbnail | default: post["feature-img"] | default: _default_cover %}
+{% assign _categories = post.categories | join: '|' %}
+{% assign _tags = post.tags | join: '|' %}
+<article class="post-teaser post-card{% if pinned %} post-card--pinned{% endif %}" data-testid="{{ testid | default: 'post-card-teaser' }}" data-post-url="{{ post.url | relative_url }}" data-categories="{{ _categories | escape }}" data-tags="{{ _tags | escape }}"{% if _cover %} style="--post-cover-image: url('{{ _cover | relative_url }}');"{% endif %}>
+  {% comment %}
+    .post-card__shape carries the clip-path (cut corners) + overflow:hidden. It has to be
+    a separate element from .post-card itself: clip-path is applied to an element's own
+    composited result *after* filter, so a hover filter (drop-shadow outline) on the same
+    clipped element gets its bleed clipped away immediately. Keeping .post-card unclipped
+    lets that outline actually show.
+  {% endcomment %}
+  <div class="post-card__shape">
+    <a aria-label="{{ post.title }}" class="post-card__link" data-testid="blog-post-link" href="{{ post.url | relative_url }}"></a>
+
+    <div class="post-card__media">
+      <div class="post-card__media-content">
+        {% if post.categories.size > 0 or post.tags.size > 0 %}
+          <div class="post-card__badges" aria-label="tags">
+            {% if post.categories.size > 0 %}
+              <span class="post-card__category">{{ post.categories | first }}</span>
+            {% endif %}
+            {% for tag in post.tags limit: 2 %}
+              <span class="post-card__tag">{{ tag }}</span>
+            {% endfor %}
+          </div>
+        {% endif %}
+        <h2 class="post-card__title">{{ post.title }}</h2>
+      </div>
+    </div>
+
+    <div class="post-card__body">
+      {% if site.excerpt or site.theme_settings.excerpt %}
+        <div class="excerpt post-card__excerpt">
+          {% if site.excerpt == "truncate" %}
+            {{ post.content | strip_html | truncate: '250' | escape }}
+          {% else %}
+            {{ post.excerpt | strip_html | escape }}
+          {% endif %}
+        </div>
+      {% endif %}
+      <div class="post-card__footer">
+        {% include blog/post_info.liquid author=post.author date=post.date %}
+      </div>
+    </div>
+  </div>
+</article>

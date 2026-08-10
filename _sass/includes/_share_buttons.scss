@@ -1,0 +1,89 @@
+ul.share-buttons {
+  list-style: none;
+  padding: 1.5% 0 0.75% 0;
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 0.6em;
+  text-align: center;
+
+  li.meta {
+    display: inline;
+    margin-right: 0.25em;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  li {
+    display: inline-flex;
+
+    // `box-shadow` is computed on the element's rectangular box *before* `clip-path` cuts
+    // the corners, so a box-shadow glow on the same clipped element ends up as a plain
+    // rectangle that ignores the chamfer entirely - the corner never highlights. The fix is
+    // the same split used by `.post-card`'s hover outline in _blog.scss: an unclipped parent
+    // owns `filter: drop-shadow()`, a clipped child owns the chamfer.
+    //
+    // The icon glyph itself has to live *inside* that clipped child (.share-buttons__shape),
+    // not as a sibling painted on top of it - a `fa-*-square` icon draws its own filled
+    // square, and at this button size that square's corners land inside the 6px chamfer cut.
+    // If the icon isn't clipped along with the background, its uncropped square corner pokes
+    // back through the cut, and `filter: drop-shadow()` (which traces the *rendered* alpha of
+    // the whole element) then dutifully traces that leftover square corner too - which is
+    // what actually broke the hover highlight, not the drop-shadow/box-shadow swap alone.
+    a {
+      position: relative;
+      display: inline-flex;
+      width: 2.4em;
+      height: 2.4em;
+      color: var(--meta);
+      transition: color 180ms ease, filter 180ms ease;
+
+      &:hover,
+      &:focus-visible {
+        text-decoration: none;
+        color: var(--link);
+        @include chamfer-glow($outline-color: var(--link), $glow-color: var(--accent-glow), $glow-size: 6px);
+
+        .share-buttons__shape {
+          border-color: var(--link);
+          background: var(--code-background);
+        }
+      }
+    }
+
+    .share-buttons__shape {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      background: rgba(0, 0, 0, 0.25);
+      border: 1px solid var(--border);
+      transition: border-color 180ms ease, background 180ms ease;
+      @include cut-corners(6px);
+    }
+  }
+
+  .sr-only {
+    position: absolute;
+    clip: rect(1px 1px 1px 1px);
+    clip: rect(1px, 1px, 1px, 1px);
+    padding: 0;
+    border: 0;
+    height: 1px;
+    width: 1px;
+    overflow: hidden;
+  }
+
+  .fa-stack {
+    vertical-align: middle;
+    width: 1.2em;
+
+    .fab {
+      font-size: 1em;
+    }
+  }
+}

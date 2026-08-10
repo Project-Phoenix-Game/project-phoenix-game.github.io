@@ -1,0 +1,185 @@
+// To clear things when we float the element inside nav and ul
+.clear {
+  *zoom: 1;
+
+  &:after {
+    clear: both;
+  }
+
+  &:before,
+  &:after {
+    content: " ";
+    display: table;
+  }
+}
+
+.site-header {
+  padding: 20px 50px 10px 50px;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  --site-header-overlay-height: 96px;
+  // Solid-grey top-anchored fade (--nav-fade), stretched across most of the header's height
+  // (not cut off at nihilum-rp.fr's ~35%, which was tuned for their much taller hero image)
+  // so backdrop-filter's blur/saturate has room to actually show through the semi-transparent
+  // portion instead of hitting a wall of opaque --background partway down and reading as a
+  // flat solid bar.
+  background: linear-gradient(180deg, var(--nav-fade) 0%, rgba(0, 0, 0, 0.35) 25%, rgba(0, 0, 0, 0.1) 55%, transparent 90%);
+  border-bottom: 1px solid var(--border);
+  backdrop-filter: blur(20px) saturate(1.6);
+  -webkit-backdrop-filter: blur(20px) saturate(1.6);
+  display: inline-block;
+  width: 100%;
+
+  .separator {
+    user-select: none;
+    opacity: 0;
+
+    &:first-child {
+      display: none;
+    }
+  }
+
+  a {
+    color: var(--header-link);
+  }
+
+  .site-title {
+    float: left;
+    font-weight: 900;
+    font-family: $font-family-logo;
+    font-size: 1.3em;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    background: var(--accent-gradient);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    filter: drop-shadow(0 0 10px var(--accent-glow));
+
+    @media (prefers-reduced-motion: no-preference) {
+      animation: phoenix-flicker 6s ease-in-out infinite;
+    }
+  }
+}
+
+@keyframes phoenix-flicker {
+  0%, 100% {
+    background-position: 0 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+nav {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+
+  ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    line-height: 1.5;
+    float: right;
+    text-align: right;
+    display: block;
+  }
+
+  li {
+    display: inline;
+    float: left;
+    margin-right: 0.4em;
+  }
+
+  a {
+    transition: color 150ms ease, text-shadow 150ms ease;
+
+    &:hover {
+      color: var(--link);
+      text-shadow: 0 0 8px var(--accent-glow);
+    }
+
+    &#pull {
+      i {
+        margin-top: 22px;
+        margin-right: 18px;
+        float: right;
+      }
+    }
+  }
+
+  // Same treatment as the tags/categories quick-jump links (_tags.scss .tag-link):
+  // uppercase, letter-spaced small caps rather than plain body text, so the nav reads as
+  // UI chrome instead of prose.
+  .navbar-label {
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    font-weight: 700;
+  }
+}
+
+/* ---- Responsive ---- */
+
+@media (min-width: ($break + 1px)) {
+  a#pull {
+    display: none;
+  }
+
+  .navbar-label-with-icon {
+    display: none;
+  }
+}
+
+@media screen and (max-width: $break) {
+  .site-header {
+    .site-title {
+      margin-top: 7px;
+    }
+  }
+
+  nav {
+    height: auto;
+
+    .separator {
+      display: none !important;
+    }
+
+    ul {
+      width: 100%;
+      overflow: hidden;
+
+      /* fade out, then shrink */
+      transition: opacity .25s 0s, font-size .25s 0s;
+      transition-delay: 0s;
+
+      &.hide {
+        font-size: 0;
+        margin: 0;
+        opacity: 0;
+        padding: 0;
+      }
+    }
+
+    li {
+      width: 100%;
+      text-align: center;
+      font-size: 1em;
+      margin: 0;
+      background-color: var(--background);
+      backdrop-filter: brightness(0.98);
+
+      &:nth-of-type(4n) {
+        background-color: var(--background);
+      }
+
+      a {
+        width: 100%;
+        display: block;
+      }
+
+    }
+  }
+}

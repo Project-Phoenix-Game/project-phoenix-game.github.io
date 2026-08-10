@@ -1,0 +1,50 @@
+# SITE CONFIGURATION
+baseurl: ""
+url: "https://project-phoenix-game.github.io"
+
+# THEME-SPECIFIC CONFIGURATION
+title: Project Phoenix                                  # site's title
+description: "Dev blog for Project Phoenix (working title) - a 4X space opera MMORTS"  # used by search engines
+avatar:                                                  # Empty for no avatar in navbar (text-only wordmark)
+favicon: assets/favicon.ico                             # Icon displayed in the tab
+
+# Header and footer text
+header_text:                                            # Empty for no title over the home hero image
+header_feature_image: assets/img/header/willgard-space-4401094.jpg
+header_feature_image_responsive: false                  # No -medium/-small variants exist for the header image
+footer_text: >
+  &copy; Project Phoenix — a work in progress, forged one devlog at a time.
+
+# Blog
+excerpt: true                                           # Or "truncate" (first 250 characters), "false" to disable
+post_navigation: true
+blog_default_cover_image: assets/img/feature-img/desk-messy.jpeg
+color_image: /assets/img/lineart.png                    # A bit transparent for color posts.
+
+# Features
+# More in the _data folder for comments, share buttons, author and language
+# For layout customization, go to the "_sass > base" folder, and check "_variables.scss"
+katex: true                                             # Enable if using math markup
+mermaid: default                                        # Enable mermaid-js for diagrams, use theme: base, forest, dark, default, neutral
+google_analytics:                                       # Measurement ID, e.g. "G-00000"
+cookie_consent: false                                   # To respect the usage of cookies
+
+# PAGINATION
+paginate: 5
+paginate_path: "/blog/page:num"
+
+# BUILD SETTINGS
+sass:
+  style: compressed
+  quiet_deps: true
+plugins: [jekyll-paginate, jekyll-seo-tag, jekyll-feed]
+# Note: GitHub Pages always enables jekyll-optional-front-matter, which turns every .md file
+# without front matter into a rendered page — so repo docs get run through Liquid and any literal
+# {% ... %} in them breaks the build. Keep non-content markdown excluded.
+exclude: [".jekyll-cache", ".jekyll-metadata", ".idea", "vendor/*", "assets/node_modules/*", ".github/*",
+          "CLAUDE.md", "README.md", "article0.md", "docs/"]
+
+# No theme/remote_theme on purpose. This repo carries the whole Type-on-Strap theme in-tree
+# (_layouts, _includes, _sass) with the Project Phoenix re-skin applied, so pulling
+# sylhare/Type-on-Strap at HEAD would only shadow files we have already customized — and would
+# silently track upstream changes we never reviewed. Do not re-add remote_theme.

@@ -1,0 +1,362 @@
+/* ---- gallery console ---- */
+
+// Same "zero the article, let the console own the single inset" pattern as
+// article.categories-page / article.tags-page (_categories.scss / _tags.scss) - without
+// this, the <article> keeps the %padding-post inset that the global
+// `article { @extend .comments; }` rule (_posts.scss) already applies to every article,
+// #gallery's own %padding-post below would double up on top of it (squeezing the grid
+// into a much narrower column than intended), and the border-top would sit inside that
+// inset instead of spanning the full article width the way #categories'/#tags' dividers do.
+article.gallery-page {
+  padding: 0;
+}
+
+#gallery {
+  // Divider under the page title + horizontal inset, matching #categories/#tags.
+  @extend %padding-post;
+  border-top: 1px solid var(--border);
+}
+
+/* ---- grid ---- */
+
+.grid {
+  padding-bottom: 6%;
+
+  /* clear fix */
+  &:after {
+    content: '';
+    display: block;
+    clear: both;
+  }
+}
+
+/* ---- .grid-item within masonry ---- */
+
+.grid-sizer,
+.grid-item {
+  /* state column width */
+  width: 32.6%;
+}
+
+.grid-item {
+  display: block;
+  float: left;
+  margin-bottom: 1%;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  position: relative;
+
+  // Resting-state ambient shadow, shape-accurate via filter (not box-shadow) - see
+  // .post-card's own version of this in _blog.scss for the full reasoning.
+  filter: drop-shadow(0 10px 16px rgba(0, 0, 0, 0.35));
+  transition: transform 180ms ease, filter 180ms ease;
+
+  &:hover,
+  &:focus-visible {
+    transform: translateY(-4px);
+
+    // Same "poor man's outline" stack as .post-card:hover (_blog.scss) - 4 hard,
+    // 0-blur, oppositely-offset drop-shadow() copies in var(--link) trace the chamfered
+    // corners that a border/box-shadow on this element could never reach, since the
+    // clip-path (on .grid-item__shape below) composites after filter. Deliberately not
+    // a blurred accent-glow halo and not box-shadow - both were tried for .post-card and
+    // reverted (Addendum 4): a blurred glow reads as an oversized halo, and box-shadow
+    // has the exact same clip-path-ordering problem as border.
+    filter:
+      drop-shadow(1.5px 0 0 var(--link))
+      drop-shadow(-1.5px 0 0 var(--link))
+      drop-shadow(0 1.5px 0 var(--link))
+      drop-shadow(0 -1.5px 0 var(--link))
+      drop-shadow(0 14px 20px rgba(0, 0, 0, 0.4));
+
+    .grid-item__caption {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    &::before,
+    &::after {
+      opacity: 1;
+      width: 16px;
+      height: 16px;
+    }
+
+    @media (prefers-reduced-motion: no-preference) {
+      &::before,
+      &::after {
+        animation: hud-bracket-flicker 120ms steps(1) 2;
+      }
+    }
+  }
+
+  &:focus-visible {
+    outline: none; // the filter ring above already reads as a focus state
+  }
+
+  // Same HUD targeting brackets as .post-card__link (_blog.scss), reusing its shared
+  // hud-bracket-flicker keyframes (_utility.scss). There .post-card__link is a separate
+  // inset:0 overlay anchor the card stacks on top of itself; .grid-item has no such
+  // overlay since the button *is* the interactive element, so the brackets live directly
+  // on it instead. Sit on the two *sharp* corners (top-right / bottom-left) since
+  // top-left and bottom-right are already chamfered by .grid-item__shape's cut-corners.
+  //
+  // z-index required: ::before/::after and .grid-item__shape are all `position`'d with
+  // z-index:auto, so absent this they'd paint in generated-content order - ::before
+  // counts as the first child, so opaque, later-painted .grid-item__shape covers it
+  // completely, while ::after (the *last* child) paints on top and stays visible. That
+  // asymmetry (bottom-left bracket showing, top-right one silently hidden behind the
+  // image) is exactly why this needs an explicit stacking order rather than relying on
+  // source order.
+  &::before,
+  &::after {
+    content: '';
+    position: absolute;
+    z-index: 1;
+    width: 10px;
+    height: 10px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 180ms ease, width 220ms cubic-bezier(0.4, 0, 0.2, 1), height 220ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  &::before {
+    top: 8px;
+    right: 8px;
+    border-top: 2px solid var(--link);
+    border-right: 2px solid var(--link);
+  }
+
+  &::after {
+    bottom: 8px;
+    left: 8px;
+    border-bottom: 2px solid var(--link);
+    border-left: 2px solid var(--link);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+
+    &:hover,
+    &:focus-visible {
+      transform: none;
+    }
+  }
+}
+
+.grid-item__shape {
+  position: relative;
+  z-index: 0; // stays below .grid-item's own ::before/::after brackets (z-index: 1)
+  display: block;
+  @include cut-corners(10px);
+  overflow: hidden;
+  background: var(--code-background);
+
+  img {
+    /* for image formatting in the masonry */
+    display: block;
+    max-width: 100%;
+    min-height: 30%;
+    // Undo base/_global.scss's blanket `img { padding: 0 9%; margin-left/right: auto; }`
+    // (meant for inline content images in post bodies) - without this, that rule's
+    // higher-specificity `img` selector still wins over this class-scoped one for the
+    // properties it sets, leaving each tile's actual photo shrunk inside a transparent
+    // 9%-per-side gutter that reveals .grid-item__shape's --code-background behind it,
+    // reading as an unwanted frame/mat around every image.
+    padding: 0;
+    margin: 0;
+  }
+}
+
+.grid-item__caption {
+  position: absolute;
+  inset: auto 0 0 0;
+  // Left padding (17px) is wider than the others: the bottom-left bracket's (::after
+  // on .grid-item) inner corner sits at a fixed (10px, 10px) point from the tile edge
+  // (its 8px inset + 2px stroke thickness), so this keeps an even gap from that corner
+  // on both axes against the 14px bottom padding. Kept the same at rest (not just on
+  // hover) even though the bracket itself is only visible on hover, since the caption's
+  // own opacity/transform transition already handles the reveal - varying padding
+  // between states as well made the text visibly jump sideways as the caption faded out.
+  padding: 10px 12px 14px 17px;
+  background: linear-gradient(0deg, rgba(0, 0, 0, 0.8) 0%, transparent 100%);
+  color: #fff;
+  // rem, not em: .grid-item is a <button>, which inherits body's 1.25em font-size (20px)
+  // rather than a small caption-scale ancestor, so an em value here reads much bigger
+  // than it looks anywhere else the site sets small/meta text.
+  font-size: 0.78rem;
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity 200ms ease, transform 200ms ease;
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+}
+
+/* --- Masonry gutter size --- */
+
+.gutter-sizer {
+  width: 1%;
+}
+
+/* ---- lightbox ---- */
+
+dialog.gallery-lightbox {
+  // The site's global `* { margin: 0; }` reset (_global.scss) overrides the UA
+  // stylesheet's `dialog:modal { margin: auto; }`, which is what centers a native
+  // dialog in the viewport - restore it explicitly or the dialog opens pinned to the
+  // top-left corner instead.
+  margin: auto;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--text);
+  width: min(92vw, 1040px);
+  max-height: 88vh;
+
+  // Same chamfer-outline-shadows() @function used by .facet-chip (_categories.scss /
+  // _tags.scss), composed here with a second drop-shadow for elevation - same trick as
+  // .post-card's own hover ring (_blog.scss).
+  filter: chamfer-outline-shadows(var(--border), 1px) drop-shadow(0 20px 60px rgba(0, 0, 0, 0.5));
+
+  &::backdrop {
+    background: rgba(5, 7, 10, 0.72);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+  }
+
+  &[open] {
+    animation: gallery-lightbox-in 220ms ease-out;
+
+    &::backdrop {
+      animation: gallery-lightbox-backdrop-in 220ms ease-out;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    &[open] {
+      animation: none;
+
+      &::backdrop {
+        animation: none;
+      }
+    }
+  }
+}
+
+@keyframes gallery-lightbox-in {
+  from { opacity: 0; transform: scale(0.96) translateY(8px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+@keyframes gallery-lightbox-backdrop-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.gallery-lightbox__shape {
+  @include cut-corners(20px);
+  overflow: hidden;
+  position: relative;
+  background: var(--header-background);
+  backdrop-filter: blur(20px) saturate(1.6);
+  -webkit-backdrop-filter: blur(20px) saturate(1.6);
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  max-height: 88vh;
+
+  @media screen and (max-width: $sm-break) {
+    @include cut-corners(12px);
+  }
+}
+
+.gallery-lightbox__figure {
+  margin: 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(20px, 3vw, 36px);
+  gap: 16px;
+}
+
+.gallery-lightbox__image {
+  display: block;
+  max-width: 100%;
+  // Reserves room for .gallery-lightbox__figure's own (now viewport-scaled) padding +
+  // gap + the title/description block below the image.
+  max-height: calc(88vh - 172px);
+  object-fit: contain;
+  // Same base/_global.scss `img { padding: 0 9%; }` override as .grid-item__shape img -
+  // otherwise the enlarged image renders needlessly narrower than its available space.
+  padding: 0;
+  margin: 0;
+}
+
+.gallery-lightbox__caption {
+  margin: 0;
+  text-align: center;
+  max-width: 60ch;
+}
+
+.gallery-lightbox__title {
+  margin: 0 0 6px;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #EDF0F2;
+}
+
+.gallery-lightbox__description {
+  margin: 0;
+  color: var(--meta);
+  font-size: 0.9rem;
+}
+
+.gallery-lightbox__close,
+.gallery-lightbox__nav {
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid var(--border);
+  color: var(--text);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: color 150ms ease, background 150ms ease;
+
+  &:hover,
+  &:focus-visible {
+    color: var(--link);
+    background: rgba(0, 0, 0, 0.6);
+  }
+}
+
+.gallery-lightbox__close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 36px;
+  height: 36px;
+  z-index: 2;
+}
+
+.gallery-lightbox__nav {
+  width: 48px;
+  height: 48px;
+  font-size: 1.1em;
+  flex: 0 0 auto;
+}
+
+.gallery-lightbox__nav--prev {
+  margin-left: 12px;
+}
+
+.gallery-lightbox__nav--next {
+  margin-right: 12px;
+}

@@ -1,0 +1,47 @@
+<header class="site-header">
+
+    <!-- Wordmark -->
+	<div class="branding">
+        <a class="site-title" aria-label="{{ site.title }}" href="{{ '/' | relative_url }}">
+        {{ site.title }}
+		</a>
+	</div>
+
+    <!-- Toggle menu -->
+    <nav class="clear">
+    <a aria-label="pull" id="pull" class="toggle" href="#">
+    <i class="fas fa-bars fa-lg"></i>
+    </a>
+
+    <!-- Menu -->
+    <ul class="hide">
+        {% assign name_page = "" %}
+        {% assign emptyArray = '' | split: '' %}
+        {% assign menus = site.data.menu | default: emptyArray %}
+        {% assign pages = site.pages | concat: menus | sort: 'position' %}
+        {% assign home_added = false %}
+        {% for page in pages %}
+        {% unless page.title == null or page.hide or name_page contains page.title %}
+            {% if page.title == 'About' and home_added == false %}
+            <li class="separator"> | </li>
+            <li>
+                <a class="clear" aria-label="Home" title="Home" href="{{ '/' | relative_url }}">
+                    <span class="navbar-label">Home</span>
+                </a>
+            </li>
+            {% assign home_added = true %}
+            {% endif %}
+            <li class="separator"> | </li>
+            <li>
+                <a class="clear" aria-label="{{ page.title }}" title="{{ page.title }}" href="{{ page.url | relative_url }}">
+                    {% if page.icon %} <i class="navbar-icon fas {{ page.icon }}" aria-hidden="true"></i>{% endif %}
+                    <span class="navbar-label {% if page.icon %}navbar-label-with-icon{% endif%}">{{ page.title }}</span>
+                </a>
+            </li>
+        {% endunless %}
+        {% assign name_page = page.title | append: name_page %}
+        {% endfor %}
+    </ul>
+
+	</nav>
+</header>

@@ -1,0 +1,52 @@
+---
+layout: page
+---
+
+<div class="home">
+    <div id="categories" class="facet-console" data-testid="categories-console" data-facet-attr="categories" data-facet-mode="union">
+        <div class="facet-hud">
+            <p class="facet-hud__readout">⟩ <span data-facet-count>{{ site.posts.size }}</span> of {{ site.posts.size }} posts</p>
+        </div>
+
+        <div class="facet-layout">
+            <div class="facet-rail" data-facet-rail>
+                <p class="facet-rail__label">Categories</p>
+
+                {% for category in site.categories %}
+                    {% assign group = category | first %}
+                    <button type="button" class="facet-chip" data-facet-value="{{ group | escape }}" data-testid="category-filter-chip">
+                        <span class="facet-chip__label"><i class="fas fa-folder fa-fw fa-sm" aria-hidden="true"></i><span>{{ group }}</span></span>
+                        <span class="facet-chip__count">{{ category | last | size }}</span>
+                    </button>
+                {% endfor %}
+
+                {% assign uncategorized_count = 0 %}
+                {% for post in site.posts %}
+                    {% if post.categories.size == 0 %}
+                        {% assign uncategorized_count = uncategorized_count | plus: 1 %}
+                    {% endif %}
+                {% endfor %}
+                {% if uncategorized_count > 0 %}
+                    <button type="button" class="facet-chip" data-facet-value="Uncategorized" data-testid="category-filter-chip">
+                        <span class="facet-chip__label"><i class="fas fa-folder fa-fw fa-sm" aria-hidden="true"></i><span>Uncategorized</span></span>
+                        <span class="facet-chip__count">{{ uncategorized_count }}</span>
+                    </button>
+                {% endif %}
+
+                <button type="button" class="facet-rail__reset" data-facet-reset>Clear filters</button>
+            </div>
+
+            <div class="facet-main">
+                <div class="posts facet-grid" data-testid="categories-facet-grid" data-facet-grid>
+                    {% for post in site.posts %}
+                        {% include blog/post_card.liquid post=post testid="category-post-teaser" %}
+                    {% endfor %}
+                </div>
+                <div class="facet-empty" data-facet-empty>
+                    <p><strong>No transmissions on this frequency.</strong></p>
+                    <p>Clear filters to resume scan.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

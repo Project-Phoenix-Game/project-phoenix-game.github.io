@@ -1,0 +1,227 @@
+// Mix-ins
+
+// Cyberpunk "cut corner" card shape - chamfers the top-left and bottom-right
+// corners only, leaving top-right/bottom-left sharp. Pattern lifted from
+// nihilum-rp.fr's card/panel components (e.g. .viewmsg, .catacc-ev-col).
+@mixin cut-corners($size: 16px) {
+  border-radius: 0;
+  clip-path: polygon(
+    #{$size} 0,
+    100% 0,
+    100% calc(100% - #{$size}),
+    calc(100% - #{$size}) 100%,
+    0 100%,
+    0 #{$size}
+  );
+}
+
+// Chamfer-safe outline for any element using cut-corners() above.
+//
+// border (and box-shadow) are computed on the element's *rectangular* box: border only ever
+// paints along the box's own 4 straight sides, and box-shadow gets clipped away/ignores the
+// chamfer entirely - a clip-path'd diagonal corner is a brand new edge that doesn't
+// correspond to any of those sides, so neither one ever traces it. The result in both cases
+// is an outline that visibly stops dead at the two chamfered corners, leaving a bare,
+// untraced notch there while the straight edges look fine - this happens in any state
+// (resting included), not just on hover/focus.
+//
+// The fix is the same "poor man's outline" trick already used for .post-card's hover ring
+// (_blog.scss): stack 4 hard-edged (0-blur), oppositely-offset drop-shadow copies. Each copy
+// is the *rendered* (already-clipped) alpha silhouette nudged a couple of pixels in one
+// direction, so their union traces the real chamfered outline everywhere, corners included -
+// something no border/box-shadow combination can do.
+@function chamfer-outline-shadows($color, $width: 1.5px) {
+  @return drop-shadow(#{$width} 0 0 #{$color})
+          drop-shadow(-#{$width} 0 0 #{$color})
+          drop-shadow(0 #{$width} 0 #{$color})
+          drop-shadow(0 -#{$width} 0 #{$color});
+}
+
+@mixin chamfer-outline($color, $width: 1.5px) {
+  filter: chamfer-outline-shadows($color, $width);
+}
+
+// Adds a soft ambient glow on top of chamfer-outline() above - for hover/focus states.
+//
+// box-shadow: none is also included: .category-list/.tag-list a.button both @extend
+// .button-link (_utility.scss), whose own :hover sets a 16px box-shadow that would otherwise
+// still apply alongside this mixin, bleeding a faint rectangular glow past the chamfer
+// underneath the correct outline.
+@mixin chamfer-glow($outline-color, $glow-color: null, $glow-size: 6px, $outline-width: 1.5px) {
+  $glow: if($glow-color, $glow-color, $outline-color);
+  box-shadow: none;
+  filter: chamfer-outline-shadows($outline-color, $outline-width) drop-shadow(0 0 #{$glow-size} #{$glow});
+}
+
+// Shared badge styles - used both by .post-card (nested under .posts) and the
+// single-post feature-image overlay (.post-feature, not nested under .posts), so
+// they're extracted here rather than living inside the .post-card selector chain.
+%badge-category {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 9px;
+  font-size: 0.72em;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  background: var(--accent-gradient);
+  color: #05070a;
+  border-radius: 2px;
+}
+
+%badge-tag {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 3px;
+  padding: 3px 9px;
+  font-size: 0.72em;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  color: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+
+// Stepped power-up flicker for HUD bracket/accent reveals on hover.
+// Pattern lifted from nihilum-rp.fr's vb-flicker keyframes (run with steps(1) so it
+// snaps between states rather than easing - reads as a glitchy signal flicker).
+@keyframes hud-bracket-flicker {
+  0% {
+    filter: brightness(1);
+  }
+  33% {
+    filter: brightness(1.4) drop-shadow(0 0 4px var(--accent-glow));
+  }
+  66% {
+    filter: brightness(0.9);
+  }
+  100% {
+    filter: brightness(1.15);
+  }
+}
+
+%padding-nav {
+  padding: $padding-small $padding-x-large;
+  @media (max-width: $xl-break) {
+    padding: $padding-small ($padding-large * 2);
+  }
+  @media (max-width: $l-break) {
+    padding: $padding-small $padding-large;
+  }
+  @media (max-width: $m-break) {
+    padding: $padding-small $padding-medium;
+  }
+  @media (max-width: $sm-break) {
+    padding: $padding-small $padding-x-small;
+  }
+}
+
+%padding-post {
+  padding: $padding-x-small $padding-x-large;
+  @media (max-width: $xl-break) {
+    padding: $padding-x-small ($padding-large * 2);
+  }
+  @media (max-width: $l-break) {
+    padding: $padding-x-small $padding-large;
+  }
+  @media (max-width: $m-break) {
+    padding: $padding-x-small $padding-medium;
+  }
+  @media (max-width: $sm-break) {
+    padding: $padding-x-small $padding-small;
+  }
+}
+
+// Same responsive horizontal scale as %padding-post, but as margin - for elements
+// (like .post-feature-card) that need to sit inset from the viewport edge as a
+// contained block rather than have internal background-colored padding.
+%margin-post {
+  margin: $padding-x-small $padding-x-large;
+  @media (max-width: $xl-break) {
+    margin: $padding-x-small ($padding-large * 2);
+  }
+  @media (max-width: $l-break) {
+    margin: $padding-x-small $padding-large;
+  }
+  @media (max-width: $m-break) {
+    margin: $padding-x-small $padding-medium;
+  }
+  @media (max-width: $sm-break) {
+    margin: $padding-x-small $padding-small;
+  }
+}
+
+%padding-header {
+  padding: $padding-medium $padding-large;
+  @media (min-width: $xl-break) {
+    padding: $padding-large $padding-large;
+  }
+  @media (max-width: $sm-break) {
+    padding: $padding-large;
+  }
+}
+
+.txt-shadow {
+  text-shadow: 0.07em 0.10em 0.15em var(--text-shadow);
+}
+
+.subtle-txt-shadow {
+  text-shadow: 1px 1px 2px var(--text-shadow);
+}
+
+// Buttons
+.button {
+  border-radius: 0.2em;
+  border: 1px solid;
+  display: inline-block;
+  margin: 1em 0;
+  padding: 0.5em 0.75em;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  transition: box-shadow 180ms ease, border-color 180ms ease;
+}
+
+a.button {
+  @extend .button-link;
+}
+
+.button-link {
+  &:hover {
+    background: var(--accent-gradient);
+    border: 1px solid transparent;
+    color: var(--background);
+    text-decoration: none;
+    filter: none;
+    box-shadow: 0 0 16px var(--accent-glow);
+  }
+}
+
+.body-link {
+  &:hover {
+    text-decoration: underline;
+    filter: brightness(0.85);
+  }
+}
+
+.post-link {
+  &:hover {
+    text-decoration: none;
+    color: var(--link);
+  }
+}
+
+// States
+.disabled {
+  opacity: 0.7;
+}
+
+// Custom
+.text-center {
+  text-align: center;
+}
+
+.right {
+  float: right;
+}

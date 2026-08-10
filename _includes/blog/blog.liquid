@@ -1,0 +1,115 @@
+{% assign _pinned_post = site.posts | where: "pinned", true | first %}
+{% assign _pinned_url = "" %}
+{% if _pinned_post %}
+  {% assign _pinned_url = _pinned_post.url | relative_url %}
+{% endif %}
+
+<div class="posts" data-testid="blog-posts"{% if _pinned_post and paginator.page == 1 %} data-has-pinned="true"{% endif %}>
+    {% unless paginator.posts %}
+    <article><section class="post-content"><p>There are no blog posts</p></section></article>
+    {% endunless %}
+
+    {% if _pinned_post and paginator.page == 1 %}
+    {% include blog/post_card.liquid post=_pinned_post pinned=true testid="blog-post-teaser" %}
+    {% endif %}
+
+    {% for post in paginator.posts %}
+    {% if _pinned_post and post.url == _pinned_post.url %}{% continue %}{% endif %}
+    {% include blog/post_card.liquid post=post testid="blog-post-teaser" %}
+    {% endfor %}
+</div>
+
+<div id="infinite-scroll-sentinel" aria-hidden="true"
+  data-next-url="{% if paginator.next_page %}{{ paginator.next_page_path | relative_url }}{% endif %}"
+  data-next-page="{% if paginator.next_page %}{{ paginator.next_page }}{% endif %}"
+  data-total-pages="{% if paginator.total_pages %}{{ paginator.total_pages }}{% endif %}"
+  data-pinned-url="{{ _pinned_url }}"></div>
+
+<script>
+  (function () {
+    const container = document.querySelector('[data-testid="blog-posts"]');
+    const sentinel = document.getElementById('infinite-scroll-sentinel');
+    if (!container || !sentinel) return;
+
+    const getNextUrl = () => (sentinel.dataset.nextUrl || '').trim();
+    const setNextUrl = (url) => {
+      sentinel.dataset.nextUrl = url || '';
+    };
+
+    let isLoading = false;
+    let isDone = false;
+
+    async function loadNextPage() {
+      if (isLoading || isDone) return;
+      const nextUrl = getNextUrl();
+      if (!nextUrl) {
+        isDone = true;
+        return;
+      }
+
+      isLoading = true;
+      try {
+        const res = await fetch(nextUrl, { credentials: 'same-origin' });
+        if (!res.ok) throw new Error('Failed to fetch next page');
+        const html = await res.text();
+        const doc = new DOMParser().parseFromString(html, 'text/html');
+
+        const nextPosts = doc.querySelectorAll('[data-testid="blog-post-teaser"]');
+        if (!nextPosts.length) {
+          setNextUrl('');
+          isDone = true;
+          return;
+        }
+
+        const pinnedUrl = (sentinel.dataset.pinnedUrl || '').trim();
+        nextPosts.forEach((node) => {
+          const postUrl = (node.getAttribute('data-post-url') || '').trim();
+          if (pinnedUrl && postUrl && pinnedUrl === postUrl) return;
+          container.appendChild(node);
+        });
+
+        const nextSentinel = doc.getElementById('infinite-scroll-sentinel');
+        if (nextSentinel && nextSentinel.dataset.nextUrl) {
+          setNextUrl(nextSentinel.dataset.nextUrl);
+        } else {
+          setNextUrl('');
+          isDone = true;
+        }
+      } catch (e) {
+        setNextUrl('');
+        isDone = true;
+      } finally {
+        isLoading = false;
+      }
+    }
+
+    async function fillViewportIfNeeded() {
+      for (let i = 0; i < 10; i++) {
+        if (!getNextUrl() || isLoading || isDone) break;
+        const rect = sentinel.getBoundingClientRect();
+        if (rect.top <= window.innerHeight) {
+          await loadNextPage();
+        } else {
+          break;
+        }
+      }
+    }
+
+    const observer = new IntersectionObserver((entries) => {
+      if (entries.some((e) => e.isIntersecting)) {
+        loadNextPage().then(fillViewportIfNeeded);
+      }
+    }, { rootMargin: '600px 0px' });
+
+    observer.observe(sentinel);
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', () => { fillViewportIfNeeded(); });
+    } else {
+      fillViewportIfNeeded();
+    }
+  })();
+</script>
+
+<noscript>
+  {% include blog/blog_nav.liquid %}
+</noscript>

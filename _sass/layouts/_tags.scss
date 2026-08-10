@@ -1,0 +1,381 @@
+.tag-category-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 1em;
+  width: 100%;
+  padding-bottom: $padding-x-small;
+}
+
+article.tags-page {
+  padding: 0;
+}
+
+.tag-list,
+.category-list {
+  flex: 0 1 auto;
+  padding-bottom: 0;
+
+  a.button {
+    position: relative;
+    z-index: 0;
+    margin: 0.15em;
+    padding: 0.35em 0.7em;
+    font-size: 0.78em;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    // .button's own generic border (_utility.scss, plain "1px solid" = currentColor) is no
+    // longer overridden on the anchor now that the real border lives on ::before below - left
+    // as-is it'd paint an uncut rectangular border that peeks out from behind ::before's
+    // chamfered corners (::before paints over it everywhere else, but not in the two
+    // triangular corners its own clip-path removes).
+    border: none;
+
+    // The chamfered background/border lives on its own ::before rather than directly on the
+    // anchor: cut-corners()'s clip-path would otherwise slice through the text/icon too, and
+    // - worse - chamfer-glow()'s hover outline (stacked hard-edged drop-shadow copies) traces
+    // the *whole* rendered alpha of whatever it's applied to, text included, which duplicates
+    // the glyphs at each offset and reads as the text suddenly going bold/smeared. Keeping
+    // the label as plain z-index: 0 content above this z-index: -1 pseudo sidesteps both.
+    &::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      @include cut-corners(6px);
+    }
+
+    i.fas {
+      margin-right: 0.35em;
+    }
+  }
+
+  p {
+    margin: 0;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+  }
+
+  ul {
+    text-align: center;
+    list-style: none;
+
+    li, div {
+      display: inline;
+    }
+
+    div.meta {
+      margin-right: 0.5em;
+    }
+  }
+}
+
+// Tags keep their existing translucent/outlined chip look, distinct from categories.
+//
+// Set the accent-gradient fill explicitly on hover rather than relying on the inherited
+// .button-link:hover rule (_utility.scss): that rule and this block's own base
+// `background: rgba(0, 0, 0, 0.2)` have equal specificity, and since this block compiles
+// after _utility.scss, the always-matching base rule was winning over the conditional
+// :hover one - so the fill never actually appeared on hover, leaving var(--background) text
+// on a near-black chip (unreadable, since var(--background) is itself a dark charcoal).
+// #05070a (matching %badge-category's text color) stays legible against the accent-gradient
+// fill. Glow uses chamfer-glow() (_utility.scss), not box-shadow -
+// same clip-path/box-shadow bug as the share buttons (see _share_buttons.scss), previously
+// fixed on .category-list below but left unfixed here.
+.tag-list a.button {
+  color: var(--meta);
+
+  // border (not just its hover color-swap) never traces the chamfer either - see
+  // chamfer-outline()'s own comment (_utility.scss) - so the resting-state border uses that
+  // instead of a plain `border`, otherwise the two corners show a bare, untraced notch even
+  // when nothing is being hovered.
+  &::before {
+    background: rgba(0, 0, 0, 0.2);
+    @include chamfer-outline(var(--border));
+  }
+
+  // Cancels .button-link:hover's own background/border/box-shadow (_utility.scss), which -
+  // now that the real fill/border/glow live on ::before instead - would otherwise still
+  // paint on the anchor itself: background/border sit one paint layer *below* that ::before
+  // (own background/border is always painted before z-index: -1 descendants) and so stay
+  // invisibly hidden behind it most of the time, only showing through the instant ::before's
+  // own background goes transparent - but box-shadow isn't part of that same paint layer, so
+  // its 16px blur was never hidden at all: it rendered plainly around the anchor's own
+  // (uncut, only lightly rounded) rectangular box the whole time, showing as a soft rounded
+  // halo peeking out from behind/around the correctly-chamfered ::before underneath it.
+  &:hover {
+    background: none;
+    border-color: transparent;
+    box-shadow: none;
+    color: #05070a;
+
+    &::before {
+      background: var(--accent-gradient);
+      border-color: transparent;
+      @include chamfer-glow($outline-color: var(--accent-glow), $glow-size: 14px);
+    }
+  }
+}
+
+// Category buttons now share .tag-list's resting look exactly (same translucent/outlined
+// chip, not %badge-category's solid fill) - only the hover state still tells them apart
+// (accent-gradient fill + a var(--link)-colored ring/glow, vs. tags' own accent-glow-colored
+// version), same as a category badge up top still inverts from resting to hover differently
+// than a tag badge does.
+//
+// Same div setup as .tag-list above throughout: no literal `border` anywhere (chamfer-outline()
+// carries the resting-state line, chamfer-glow() the hover one), and the ::before's fill
+// stays solid/opaque once hovered rather than inverting to a transparent "outlined" look -
+// filter: drop-shadow() recolors whatever alpha the element *already has*, so a transparent
+// fill with no border leaves it nothing to trace (see chamfer-glow()'s own comment,
+// _utility.scss) and the whole ring renders invisible.
+.category-list a.button {
+  color: var(--meta);
+
+  &::before {
+    background: rgba(0, 0, 0, 0.2);
+    @include chamfer-outline(var(--border));
+  }
+
+  // See .tag-list a.button:hover above for why the anchor's own inherited
+  // background/border/box-shadow (from .button-link:hover in _utility.scss) needs
+  // cancelling here too.
+  &:hover {
+    background: none;
+    border-color: transparent;
+    box-shadow: none;
+    color: #05070a;
+
+    &::before {
+      background: var(--accent-gradient);
+      @include chamfer-glow($outline-color: var(--link), $glow-color: var(--accent-glow), $glow-size: 6px);
+    }
+  }
+}
+
+.tag-anchor {
+  margin-top: $padding-x-small;
+
+  a {
+    color: var(--link);
+
+    &:hover {
+      text-decoration: none;
+    }
+  }
+}
+
+// ---------------------------------------------------------------------------------------
+// Signal Index - live filter console (tags page). Structurally identical to the categories
+// page's own copy in _categories.scss (same duplication precedent as the accordion blocks
+// this replaced) - only the active-chip glow color below differs, matching the per-post tag
+// chip's own accent-glow-colored glow (.tag-list a.button:hover above).
+// ---------------------------------------------------------------------------------------
+
+#tags {
+  // Console owns the horizontal inset (matching every other section's %padding-post scale)
+  // and the divider under the page title - .facet-grid below cancels the redundant padding
+  // it would otherwise also get from the global .posts rule (_blog.scss).
+  @extend %padding-post;
+  border-top: 1px solid var(--border);
+
+  .facet-grid {
+    padding: 0;
+  }
+
+  .facet-hud__readout {
+    font-family: $monospace;
+    font-size: 0.85em;
+    color: var(--link);
+    margin: 0 0 18px;
+  }
+
+  .facet-layout {
+    display: flex;
+    align-items: flex-start;
+    gap: 28px;
+    width: 100%;
+  }
+
+  .facet-rail {
+    position: sticky;
+    top: calc(var(--site-header-overlay-height, 96px) + #{$padding-x-small});
+    display: flex;
+    flex-direction: column;
+    align-self: flex-start;
+    gap: 8px;
+    width: 230px;
+    flex: 0 0 230px;
+  }
+
+  .facet-rail__label {
+    font-family: $monospace;
+    font-size: 0.68em;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--meta);
+    margin: 0 0 4px;
+  }
+
+  .facet-rail__reset {
+    margin-top: 4px;
+    background: none;
+    border: 1px dashed var(--border);
+    color: var(--meta);
+    font-family: $monospace;
+    font-size: 0.7em;
+    padding: 6px 10px;
+    cursor: pointer;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    transition: color 150ms ease, border-color 150ms ease;
+
+    &:hover {
+      color: var(--link);
+      border-color: var(--link);
+    }
+  }
+
+  .facet-chip {
+    position: relative;
+    z-index: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin: 0;
+    padding: 0.55em 0.8em;
+    border: none;
+    background: none;
+    color: var(--meta);
+    cursor: pointer;
+    text-align: left;
+    font-family: $font-family-main;
+    font-size: 0.82em;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    @include chamfer-outline(var(--border));
+    transition: color 150ms ease, filter 150ms ease;
+
+    &::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      background: var(--code-background);
+      @include cut-corners(8px);
+    }
+
+    i.fas {
+      margin-right: 0.35em;
+    }
+
+    &:hover {
+      color: var(--text);
+    }
+
+    &.is-active {
+      color: #05070a;
+      @include chamfer-glow($outline-color: var(--accent-glow), $glow-size: 14px);
+
+      &::before {
+        background: var(--accent-gradient);
+      }
+
+      .facet-chip__count {
+        background: rgba(5, 7, 10, 0.25);
+        border-color: rgba(5, 7, 10, 0.3);
+        color: #05070a;
+      }
+    }
+  }
+
+  .facet-chip__label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+
+    span {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+  }
+
+  .facet-chip__count {
+    font-family: $monospace;
+    font-size: 0.72em;
+    color: var(--meta);
+    background: rgba(0, 0, 0, 0.25);
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    padding: 1px 6px;
+    flex: 0 0 auto;
+  }
+
+  .facet-main {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  .facet-empty {
+    position: relative;
+    z-index: 0;
+    display: none;
+    flex-direction: column;
+    align-items: flex-start;
+    width: 100%;
+    gap: 10px;
+    padding: 34px 28px;
+    color: var(--meta);
+    font-family: $monospace;
+    font-size: 0.85em;
+    @include chamfer-outline(var(--border));
+
+    &::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      background: var(--code-background);
+      @include cut-corners(16px);
+    }
+
+    &.is-active {
+      display: flex;
+    }
+
+    strong {
+      color: var(--text);
+    }
+  }
+
+  @media screen and (max-width: $break) {
+    .facet-layout {
+      flex-direction: column;
+    }
+
+    .facet-rail {
+      position: static;
+      width: 100%;
+      flex-direction: row;
+      overflow-x: auto;
+      padding-bottom: 6px;
+    }
+
+    .facet-rail__label {
+      display: none;
+    }
+
+    .facet-chip,
+    .facet-rail__reset {
+      flex: 0 0 auto;
+      white-space: nowrap;
+    }
+  }
+}

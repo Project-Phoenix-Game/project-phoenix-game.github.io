@@ -1,0 +1,57 @@
+---
+layout: page
+---
+
+<div class="home">
+
+    <!-- cycles through posts to get tags -->
+    {% assign rawtags = "" %}
+    {% for post in site.posts %}
+    {% if post.tags.size > 0 %}
+    {% assign post_tags = post.tags | join:'|' | append:'|' %}
+    {% assign rawtags = rawtags | append:post_tags %}
+    {% endif %}
+    {% endfor %}
+
+    {% assign tags = rawtags | split:'|' | sort | uniq %}
+    {% assign valid_tags = "" | split: "" %}
+    {% for tag in tags %}
+    {% if tag != "" %}
+    {% assign valid_tags = valid_tags | push: tag %}
+    {% endif %}
+    {% endfor %}
+
+    <div id="tags" class="facet-console" data-testid="tags-console" data-facet-attr="tags" data-facet-mode="intersect">
+        <div class="facet-hud">
+            <p class="facet-hud__readout">⟩ <span data-facet-count>{{ site.posts.size }}</span> of {{ site.posts.size }} posts</p>
+        </div>
+
+        <div class="facet-layout">
+            <div class="facet-rail" data-facet-rail>
+                <p class="facet-rail__label">Tags</p>
+
+                {% for tag in valid_tags %}
+                    {% assign _tag_count = site.posts | where_exp: "post", "post.tags contains tag" | size %}
+                    <button type="button" class="facet-chip" data-facet-value="{{ tag | escape }}" data-testid="tag-filter-chip">
+                        <span class="facet-chip__label"><i class="fas fa-tag fa-fw fa-sm" aria-hidden="true"></i><span>{{ tag }}</span></span>
+                        <span class="facet-chip__count">{{ _tag_count }}</span>
+                    </button>
+                {% endfor %}
+
+                <button type="button" class="facet-rail__reset" data-facet-reset>Clear filters</button>
+            </div>
+
+            <div class="facet-main">
+                <div class="posts facet-grid" data-testid="tags-facet-grid" data-facet-grid>
+                    {% for post in site.posts %}
+                        {% include blog/post_card.liquid post=post testid="tag-post-teaser" %}
+                    {% endfor %}
+                </div>
+                <div class="facet-empty" data-facet-empty>
+                    <p><strong>No transmissions on this frequency.</strong></p>
+                    <p>Clear filters to resume scan.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

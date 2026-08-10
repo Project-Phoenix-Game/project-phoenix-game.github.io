@@ -1,0 +1,483 @@
+/* --- Header text feature --- */
+.call-out {
+  @extend %padding-header;
+  position: relative;
+  display: inline-block;
+  width: 100%;
+  height: 100%;
+  font-size: 1.2em;
+  text-align: center;
+  color: var(--header-text);
+  background: no-repeat var(--header-background);
+  backdrop-filter: brightness(0.5);
+  background-size: cover;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    mix-blend-mode: screen;
+    background-image:
+      radial-gradient(1px 1px at 10% 20%, rgba(255, 255, 255, 0.55), transparent),
+      radial-gradient(1px 1px at 80% 60%, rgba(255, 255, 255, 0.45), transparent),
+      radial-gradient(1.5px 1.5px at 40% 80%, rgba(255, 255, 255, 0.5), transparent),
+      radial-gradient(1px 1px at 60% 15%, rgba(255, 255, 255, 0.4), transparent),
+      radial-gradient(1.5px 1.5px at 92% 90%, rgba(255, 255, 255, 0.35), transparent),
+      radial-gradient(1px 1px at 25% 55%, rgba(255, 255, 255, 0.4), transparent),
+      radial-gradient(1px 1px at 50% 35%, rgba(255, 255, 255, 0.3), transparent);
+  }
+
+  h1, p {
+    position: relative;
+    // Above the .call-out_img::after fade below, which - like the sparkle ::before above -
+    // has no z-index of its own (auto): a plain z-index: 1 here beats that regardless of
+    // paint/source order, same role .title-padder's z-index plays over the post hero's fade.
+    z-index: 1;
+  }
+
+  h1 {
+    font-family: $font-family-logo;
+    letter-spacing: 0.02em;
+    @extend .subtle-txt-shadow;
+  }
+
+  /* --- Responsive --- */
+  @media screen and (max-width: $m-break) {
+    background-size: 170% auto;
+  }
+
+  @media screen and (max-width: 450px) {
+    background-size: 200% auto;
+  }
+
+  @media screen and (max-width: 400px) {
+    background-size: 250% auto;
+  }
+
+  @media screen and (max-width: 380px) {
+    background-size: 280% auto;
+  }
+
+  p:last-child {
+    margin-bottom: 0;
+  }
+}
+
+// Height floor shared with the single-post hero (.post-feature header#main, _posts.scss) so
+// the home hero reads as the same band as a post's cover image. Needed because .call-out is
+// otherwise sized entirely by %padding-header plus whatever text sits in it - with
+// `header_text` empty it collapses to just the padding. Scoped to .call-out_img (not plain
+// .call-out) since a hero with no image has nothing to give height to. Both heroes carry
+// #main's negative top margin below, so the same floor yields the same visible band.
+.call-out_img {
+  min-height: $hero-min-height;
+
+  @media screen and (min-width: $break) {
+    min-height: $hero-min-height-wide;
+  }
+
+  @media screen and (max-width: $sm-break) {
+    min-height: $hero-min-height-small;
+  }
+}
+
+// Same bottom-edge vignette as the post hero (.post-feature header#main::before in
+// _posts.scss): fades the image to var(--background) right at its own bottom edge, so the
+// hand-off into the page background below reads as one continuous fade instead of a hard
+// cut. A separate ::after (not ::before, already taken by .call-out's sparkle overlay above)
+// on .call-out_img specifically, since plain .call-out has no image/fade of its own.
+.call-out_img::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(to top, var(--background) 0%, rgba(35, 35, 35, .5) 30%, transparent 60%);
+}
+
+#main {
+  // --parallax-offset is written by navbar.js's scroll listener (0px until the first scroll
+  // event fires) - folded into the existing -50px baseline via calc() so scrolling down
+  // reveals more of the image's lower portion, same as it always has.
+  background-position: 100% calc(-50px + var(--parallax-offset, 0px)), 0 center, center top;
+  margin-top: calc(var(--site-header-overlay-height, 96px) * -1);
+  padding-top: calc(var(--site-header-overlay-height, 96px) + #{$padding-medium});
+}
+
+/* --- Post listing --- */
+.posts {
+  @extend %padding-post;
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 40px;
+
+  // Same divider-under-the-header treatment as #gallery/#categories/#tags
+  // (_gallery.scss/_categories.scss/_tags.scss: @extend %padding-post + this border-top),
+  // scoped to the home page's own post grid via its data-testid rather than the bare
+  // `.posts` class - `.posts` is also the class Categories/Tags put on their *inner*
+  // facet-grid (`.posts.facet-grid`, data-testid="categories-facet-grid"/"tags-facet-grid"),
+  // which already sits below its own #categories/#tags console's border-top; targeting
+  // `.posts` unscoped would draw a second, redundant divider there.
+  &[data-testid="blog-posts"] {
+    border-top: 1px solid var(--border);
+  }
+
+  @media screen and (max-width: $break) {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 20px;
+  }
+
+  @media screen and (max-width: $sm-break) {
+    grid-template-columns: 1fr;
+  }
+
+  // --- Card shell ---
+  // Default composition is the "vertical" layout: media on top, solid body below.
+  // See the horizontal-layout override further down for the "2-per-row" (and pinned) cards.
+  .post-card {
+    position: relative;
+
+    // Set by the Categories/Tags facet-filter JS (assets/js/partials/facet-filter.js) to
+    // drop non-matching cards out of the .posts grid without re-rendering/duplicating markup.
+    &.is-hidden {
+      display: none;
+    }
+
+    padding: 0;
+    margin: 0;
+    float: none;
+    width: auto;
+    border-bottom: 0;
+
+    grid-column: span 2;
+    min-height: 300px;
+
+    // `box-shadow` can't trace a clip-path shape either (same as `border` - it's computed
+    // on the element's rectangular box, not the chamfered one), so even on this unclipped
+    // element it would paint a rectangular shadow slightly mismatched with the actual
+    // chamfered silhouette peeking out at the two cut corners. Using `filter: drop-shadow()`
+    // for the resting-state ambient shadow too keeps it shape-accurate everywhere.
+    filter: drop-shadow(0 10px 16px rgba(0, 0, 0, 0.35));
+
+    -moz-transition: transform 180ms ease, filter 180ms ease;
+    -webkit-transition: transform 180ms ease, filter 180ms ease;
+    transition: transform 180ms ease, filter 180ms ease;
+
+    @media screen and (max-width: $sm-break) {
+      min-height: 220px;
+    }
+
+    // Neither `border` nor `box-shadow` can trace a clip-path shape - both are computed
+    // on the element's rectangular box *before* the clip-path cuts the corners, so they
+    // just stop dead at the chamfer instead of following the diagonal edge. `filter:
+    // drop-shadow()` operates on the actual rendered (post-clip) alpha silhouette instead,
+    // so it can hug the cut corners *if* the clip-path lives on a different element:
+    // clip-path is applied to an element's own composited output *after* filter, so a
+    // drop-shadow on the same clipped element has its bleed clipped away immediately.
+    // That's why the clip-path/overflow live on the child .post-card__shape instead of
+    // here - this outer element stays unclipped so the outline actually shows.
+    // Stacking 4 hard (0-blur), oppositely-offset copies is the standard "poor man's
+    // outline" trick: each copy is the full silhouette nudged a couple of pixels in one
+    // direction, and their union forms a solid ring that traces the real (chamfered) edge
+    // everywhere - kept tight/crisp on purpose, no large soft glow blur mixed in.
+    &:hover {
+      -moz-transform: translateY(-4px);
+      -webkit-transform: translateY(-4px);
+      transform: translateY(-4px);
+      filter:
+        drop-shadow(1.5px 0 0 var(--link))
+        drop-shadow(-1.5px 0 0 var(--link))
+        drop-shadow(0 1.5px 0 var(--link))
+        drop-shadow(0 -1.5px 0 var(--link))
+        drop-shadow(0 14px 20px rgba(0, 0, 0, 0.4));
+    }
+
+    .post-card__shape {
+      position: relative;
+      height: 100%;
+      @include cut-corners(20px);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      background: var(--code-background);
+
+      @media screen and (max-width: $sm-break) {
+        @include cut-corners(12px);
+      }
+    }
+
+    .post-card__link {
+      position: absolute;
+      inset: 0;
+      z-index: 5;
+
+      // HUD targeting brackets, inspired by nihilum-rp.fr's .sb-vote-btn hover reveal.
+      // Sit on the two *sharp* corners (top-right / bottom-left) since top-left and
+      // bottom-right are already chamfered by the card's own cut-corners shape.
+      &::before,
+      &::after {
+        content: '';
+        position: absolute;
+        width: 10px;
+        height: 10px;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 180ms ease, width 220ms cubic-bezier(0.4, 0, 0.2, 1), height 220ms cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      &::before {
+        top: 8px;
+        right: 8px;
+        border-top: 2px solid var(--link);
+        border-right: 2px solid var(--link);
+      }
+
+      &::after {
+        bottom: 8px;
+        left: 8px;
+        border-bottom: 2px solid var(--link);
+        border-left: 2px solid var(--link);
+      }
+
+      &:hover,
+      &:focus-visible {
+        &::before,
+        &::after {
+          opacity: 1;
+          width: 16px;
+          height: 16px;
+        }
+
+        @media (prefers-reduced-motion: no-preference) {
+          &::before,
+          &::after {
+            animation: hud-bracket-flicker 120ms steps(1) 2;
+          }
+        }
+      }
+    }
+
+    // --- Media region: cover image + overlaid title/badges ---
+    // Vertical (default) layout: image on top, so the fade + separator run top-to-bottom,
+    // resolving into the body panel's own solid color - same recipe as nihilum-rp.fr's
+    // .nex-banner-gard / .forum-cover (linear-gradient(to top, var(--card) 0%, ...)).
+    .post-card__media {
+      position: relative;
+      flex: 0 0 190px;
+      background-color: rgba(0, 0, 0, 0.2);
+      background-image: var(--post-cover-image);
+      background-size: cover;
+      background-position: center;
+      overflow: hidden;
+      border-bottom: 1px solid rgb(78, 83, 89);
+
+      &::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(to top, var(--code-background) 0%, rgba(0, 0, 0, 0.6) 30%, rgba(0, 0, 0, 0.08) 65%, transparent 100%);
+        pointer-events: none;
+      }
+    }
+
+    .post-card__media-content {
+      position: relative;
+      z-index: 1;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 14px 16px;
+      pointer-events: none;
+    }
+
+    .post-card__badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 8px;
+    }
+
+    .post-card__category {
+      @extend %badge-category;
+    }
+
+    .post-card__tag {
+      @extend %badge-tag;
+    }
+
+    .post-card__title {
+      margin: 0;
+      font-family: $font-family-headings;
+      font-size: 1.15em;
+      line-height: 1.25;
+      color: rgba(255, 255, 255, 0.98);
+      @extend .subtle-txt-shadow;
+    }
+
+    // --- Body region: solid background, excerpt + footer ---
+    .post-card__body {
+      position: relative;
+      z-index: 1;
+      flex: 1 1 auto;
+      display: flex;
+      flex-direction: column;
+      padding: 14px 16px 16px;
+    }
+
+    .post-card__excerpt {
+      flex: 1 1 auto;
+      color: var(--meta);
+      font-size: 0.9em;
+      line-height: 1.45;
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 3;
+      line-clamp: 3;
+      overflow: hidden;
+      margin-bottom: 10px;
+    }
+
+    .post-card__footer {
+      margin-top: auto;
+      pointer-events: none;
+
+      .post-info {
+        margin: 0;
+      }
+
+      .post-meta {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+
+      .meta,
+      .last-modified {
+        color: var(--meta);
+      }
+
+      .meta-separator {
+        color: var(--border);
+      }
+
+      .author-info {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .author-info img {
+        padding: 0;
+        width: 22px;
+        height: 22px;
+        border-radius: 999px;
+      }
+
+      .author-info a {
+        pointer-events: auto;
+        position: relative;
+        z-index: 4;
+        color: var(--text);
+      }
+    }
+  }
+
+  // --- Horizontal layout: rows with a single card (pinned) or two cards ---
+  // Media on the left (with title/badges overlaid), solid body on the right
+  // (excerpt + author/time footer) - matches nihilum-rp.fr's list-row cards.
+  // Excluded on .facet-grid (Categories/Tags): those pages have no single pinned post, so
+  // every card renders in the uniform "3-per-row" vertical layout instead.
+  .post-card--pinned,
+  &:not([data-has-pinned="true"]):not(.facet-grid) .post-card:nth-child(1),
+  &:not([data-has-pinned="true"]):not(.facet-grid) .post-card:nth-child(2),
+  &[data-has-pinned="true"] .post-card:nth-child(2),
+  &[data-has-pinned="true"] .post-card:nth-child(3) {
+    .post-card__shape {
+      flex-direction: row;
+    }
+
+    .post-card__media {
+      flex: 0 0 42%;
+      // Left-to-right fade + separator instead of the vertical-layout's top-to-bottom one:
+      // the image resolves into the body panel's color at its *right* edge, where the
+      // text section begins, matching nihilum-rp.fr's forum-cover (grid) card treatment.
+      border-bottom: 0;
+      border-right: 1px solid rgb(78, 83, 89);
+
+      &::before {
+        background:
+          linear-gradient(180deg, transparent 0%, rgba(0, 0, 0, 0.55) 100%),
+          linear-gradient(to right, transparent 0%, transparent 55%, var(--code-background) 100%);
+      }
+    }
+
+    .post-card__body {
+      padding: 20px 24px;
+      justify-content: center;
+    }
+
+    .post-card__title {
+      font-size: 1.3em;
+    }
+
+    @media screen and (max-width: $break) {
+      .post-card__shape {
+        flex-direction: column;
+      }
+
+      .post-card__media {
+        flex: 0 0 200px;
+        border-right: 0;
+        border-bottom: 1px solid rgb(78, 83, 89);
+
+        &::before {
+          background: linear-gradient(to top, var(--code-background) 0%, rgba(0, 0, 0, 0.6) 30%, rgba(0, 0, 0, 0.08) 65%, transparent 100%);
+        }
+      }
+
+      .post-card__body {
+        padding: 14px 16px 16px;
+      }
+    }
+  }
+
+  .post-card--pinned {
+    grid-column: 1 / -1;
+  }
+
+  &:not([data-has-pinned="true"]):not(.facet-grid) {
+    .post-card:nth-child(1),
+    .post-card:nth-child(2) {
+      grid-column: span 3;
+    }
+  }
+
+  &[data-has-pinned="true"] {
+    .post-card:nth-child(2),
+    .post-card:nth-child(3) {
+      grid-column: span 3;
+    }
+  }
+
+  @media screen and (max-width: $break) {
+    .post-card {
+      grid-column: span 2;
+    }
+
+    .post-card:not(.post-card--pinned):nth-child(1),
+    .post-card:not(.post-card--pinned):nth-child(2) {
+      grid-column: span 2;
+    }
+  }
+
+  @media screen and (max-width: $sm-break) {
+    .post-card,
+    .post-card:not(.post-card--pinned):nth-child(1),
+    .post-card:not(.post-card--pinned):nth-child(2) {
+      grid-column: span 1;
+    }
+  }
+}

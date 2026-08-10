@@ -1,0 +1,64 @@
+---
+layout: default
+---
+{% assign _default_cover = site.blog_default_cover_image | default: "assets/img/feature-img/desk-messy.jpeg" %}
+{% assign _cover = page.feature-img %}
+{% if _cover == nil and page.color == nil %}
+    {% assign _cover = _default_cover %}
+{% endif %}
+{% capture _post_number %}{% include blog/post_index.liquid post=page %}{% endcapture %}
+
+<article class="feature-image post-feature">
+    <header id="main" style="">
+        <div class="title-padder">
+            {% if page.hide_title %}
+                <div class="feature-image-padding"></div>
+            {% else %}
+                <div class="post-feature__title-row">
+                    <h1 id="{{ page.title | cgi_escape }}" class="title post-feature__title">{{ page.title }}</h1>
+                    {% if page.categories.size > 0 or page.tags.size > 0 %}
+                    <div class="post-card__badges post-feature__badges" aria-label="tags">
+                        {% if page.categories.size > 0 %}
+                            <span class="post-card__category">{{ page.categories | first }}</span>
+                        {% endif %}
+                        {% for tag in page.tags limit: 4 %}
+                            <span class="post-card__tag">{{ tag }}</span>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+                {% include blog/post_info.liquid author=page.author date=page.date last_modified=page.last_modified %}
+                <div class="post-feature__line"></div>
+            {% endif %}
+        </div>
+    </header>
+
+    <div class="post-feature-card">
+        <div class="post-feature-card__shape">
+            <section class="post-content">
+            {% if page.bootstrap %}<div class="bootstrap-iso">{% endif %}
+                    {{ content }}
+            {% if page.bootstrap %}</div>{% endif %}
+            </section>
+        </div>
+
+        <span class="post-feature-card__index" data-testid="post-index" aria-label="Post number">#{{ _post_number | strip }}</span>
+    </div>
+
+    <!-- Social media shares -->
+    {% include social/share_buttons.liquid %}
+
+    <!-- Category and Tag list -->
+    <div class="tag-category-container">
+        <!-- Category list -->
+        {% capture category_list %}{{ page.categories | join: "|" }}{% endcapture %}
+        {% include default/category_list.liquid categories=category_list %}
+
+        <!-- Tag list -->
+        {% capture tag_list %}{{ page.tags | join: "|" }}{% endcapture %}
+        {% include default/tags_list.liquid tags=tag_list %}
+    </div>
+
+</article>
+
+{% include blog/post_footer.liquid color=page.color img=_cover %}

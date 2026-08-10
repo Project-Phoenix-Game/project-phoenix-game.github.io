@@ -1,0 +1,8 @@
+{% comment %}
+  Outputs the 1-based chronological index of include.post across all of site.posts
+  (oldest published post = 1). site.posts is already date-sorted newest-first, so
+  `reverse` gives oldest-first without re-sorting. Usage:
+    {% capture n %}{% include blog/post_index.liquid post=page %}{% endcapture %}
+{% endcomment %}
+{% assign _chronological_posts = site.posts | reverse %}
+{% for _p in _chronological_posts %}{% if _p.url == include.post.url %}{{ forloop.index }}{% endif %}{% endfor %}

@@ -1,0 +1,396 @@
+.comments {
+  @extend %padding-post;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  float: left;
+  width: 100%;
+
+  iframe {
+    width: 100%;
+    border: none;
+    min-height: 500px;
+  }
+}
+
+article {
+  @extend .comments;
+
+  header {
+    margin-bottom: 6%;
+    text-align: center;
+  }
+
+  a:hover {
+    @extend .body-link;
+  }
+
+  .footnotes {
+    font-size: 0.9em;
+  }
+}
+
+footer {
+  width: 100%;
+  margin-top: 0;
+  margin-bottom: 0;
+  font-size: 0.9em;
+  display: inline-block;
+  text-align: center;
+
+  .meta {
+    display: inline;
+  }
+
+  a.button {
+    margin-left: 1em;
+  }
+}
+
+header {
+  h1 {
+    margin: 0;
+  }
+}
+
+.meta {
+  color: var(--meta);
+  letter-spacing: 0.1em;
+  margin: 0;
+  text-transform: uppercase;
+}
+
+.last-modified {
+  color: var(--meta);
+  font-size: 0.8em;
+  font-style: italic;
+  margin-top: 0.5em;
+}
+
+/* --- Post info --- */
+// display: flex + width: 100% (not inline-flex, which shrinks to fit its content's preferred
+// size) so this always claims the full width its container actually has available - giving
+// the author-info/date row inside the most room possible to fit on one line before a longer
+// name forces a wrap.
+.post-info {
+  border-radius: 1em;
+  padding-right: 0.5em;
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+
+  .post-meta {
+    display: flex;
+    align-items: center;
+    flex-wrap: nowrap;
+
+    .meta:only-child {
+      margin: 0 auto;
+    }
+  }
+
+  a {
+    display: flex;
+    align-items: center;
+
+    img {
+      height: auto;
+    }
+
+    &:hover {
+      text-decoration: none;
+    }
+  }
+
+  // Authors without a url (blog/post_info.liquid only wraps the avatar+name in an <a> when
+  // author.url is set) render the avatar <img> and name <p> as .author-info's own direct
+  // children instead - so .author-info itself needs display: flex too, not just the `a`
+  // rule above. Without it, .author-info falls back to being a plain block <div>, and the
+  // name's <p> (block-level) drops onto its own line below the avatar.
+  .author-info {
+    display: flex;
+    align-items: center;
+  }
+
+  img {
+    border-radius: 1em;
+    padding: 0;
+    width: 1.5em;
+    height: 100%;
+    margin-right: 0.5em;
+  }
+
+  .meta-separator {
+    color: var(--meta);
+    margin: 0 0.5em;
+    white-space: nowrap;
+  }
+
+  .meta {
+    white-space: nowrap;
+  }
+}
+
+/* --- Feature image --- */
+.feature-image {
+  padding: 0;
+
+  .post-link {
+    color: var(--header-text);
+  }
+
+  h1.title, .post-info {
+    @extend .txt-shadow;
+  }
+
+  header {
+    color: var(--header-text);
+    margin-bottom: 0;
+    padding: 3.6% $padding-large;
+
+    .meta, .meta-separator, .last-modified {
+      color: var(--header-text);
+      filter: opacity(0.7);
+    }
+  }
+
+  .post-content {
+    @extend %padding-post;
+    padding-bottom: 0;
+  }
+
+  footer {
+    @extend %padding-post;
+    padding-top: 0;
+  }
+
+  .feature-image-padding {
+    padding: $feature-image-padding;
+  }
+}
+
+/*-- feature-image Responsive scrolling --*/
+.feature-image header {
+  @media screen and (max-width: $break) {
+    padding: $padding-large*1.5 $padding-small;
+  }
+
+  @media screen and (min-width: $break) {
+    background-size: 120% auto;
+  }
+
+  @media screen and (max-width: $break) {
+    background-size: 200% auto;
+  }
+
+  @media screen and (max-width: $sm-break) {
+    background-size: 400% auto;
+  }
+}
+
+/*
+ * Post-only feature-image treatment: title/badges/author overlaid bottom-left with a
+ * top-to-bottom fade into the body panel color, plus a left-to-right accent separator
+ * line. Matches nihilum-rp.fr's individual topic view (.nex-banner / .nex-tz / .nex-line),
+ * and reuses the same .post-card__category / .post-card__tag badge styles as the grid cards.
+ * Scoped to .post-feature specifically so About/Gallery/Search/etc. (plain .feature-image
+ * pages, still centered) are unaffected.
+ */
+.post-feature {
+  // header#main is a full-bleed hero, a direct sibling of .post-feature-card (not wrapped
+  // by it) - so it keeps the sitewide #main negative-top-margin/backdrop-clearance hack
+  // (_global.scss) that tucks it directly under the sticky nav, same as the home hero.
+  header#main {
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    min-height: $hero-min-height;
+    text-align: left;
+    // Clips the cover image to the header's own box: background-size: cover scales the image
+    // up until it fills the box on both axes, which crops whichever axis overflows (usually
+    // top/bottom, since the box is normally wider than it is tall) - overflow: hidden is the
+    // guarantee that cropped part never paints past the header's edge (and past where the
+    // ::before vignette below fades it out), instead of relying on the vignette alone.
+    overflow: hidden;
+    // Overrides the sitewide #main rule (_blog.scss): that rule's background-position is a
+    // 3-value list tuned for its own multi-layer starfield background, but with only the
+    // single feature-image layer in play here, the browser applies just the first value
+    // (100% -50px) - right-aligned and shifted up, not centered. The ID in this selector
+    // out-specifies the plain `#main` rule regardless of source order.
+    // 50% (not the `center` keyword) for the X so the Y half can be its own calc() - same
+    // --parallax-offset navbar.js writes on scroll for the home hero, folded in here too so
+    // the post hero gets the same reveal-more-of-the-image-below effect as you scroll, just
+    // centered horizontally instead of the home hero's right-aligned layer.
+    background-position: 50% calc(50% + var(--parallax-offset, 0px)) !important;
+    background-size: cover !important;
+
+    // Taller on screens with room for it, without forcing a huge hero on phones - the
+    // $sm-break override below still takes $hero-min-height-small on the smallest screens.
+    @media screen and (min-width: $break) {
+      min-height: $hero-min-height-wide;
+    }
+
+    // Pulled down close to the image's bottom edge (was 4%) so the title/badges/info block
+    // sits lower against the hero, closer to the fade instead of floating in the middle of it.
+    padding-bottom: 0;
+
+    // Own vignette is black-only now (not faded all the way to var(--background) as before) -
+    // it exists purely to keep the title/badges/info text legible, so it only needs to cover
+    // the bottom portion where that text actually sits, leaving much more of the image visible
+    // above it. The hand-off to var(--background) (the color showing in the gap below, where
+    // .post-feature-card's own %margin-post top margin is kept) is a separate, second fade -
+    // see .post-feature-card::before below - rather than stretching this one gradient to do
+    // both jobs across nearly the whole image height.
+    &::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top,var(--background) 0%,rgba(35,35,35,.5) 30%,transparent 60%);
+      pointer-events: none;
+    }
+
+    @media screen and (max-width: $sm-break) {
+      min-height: $hero-min-height-small;
+    }
+  }
+
+  .title-padder {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+  }
+
+  // Title + badges share one row (badges right-aligned) instead of stacking badges as
+  // their own row above the title - this also shortens the overall bottom-anchored content
+  // block, which is what actually moves the title lower (closer to the image's bottom edge):
+  // header#main anchors this block via align-items: flex-end, so removing a whole stacked
+  // row pulls the block's top edge (the title) down with it, no extra offset needed.
+  .post-feature__title-row {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.4em 1em;
+  }
+
+  .post-feature__badges {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    flex: 0 0 auto;
+    gap: 6px;
+
+    .post-card__category {
+      @extend %badge-category;
+    }
+
+    .post-card__tag {
+      @extend %badge-tag;
+    }
+  }
+
+  .post-feature__title {
+    flex: 1 1 auto;
+    min-width: 0;
+    text-align: left;
+  }
+
+  // Now the last element in the block (after title/badges/post_info) rather than right
+  // under the title, so it lands at the very bottom of the bottom-anchored content - in the
+  // ::before fade band, where the image is already blending into var(--code-background).
+  // width: 100% (of .title-padder, itself bounded by header's own horizontal padding) rather
+  // than a fixed short measure, so the line starts flush with the title's own left edge and
+  // fades out at the mirror-image distance from the right edge.
+  .post-feature__line {
+    height: 1px;
+    width: 100%;
+    margin: 14px 0 0;
+    background: linear-gradient(to right, var(--link), transparent);
+  }
+
+  // --- Bordered card wrapping the feature image + post body ---
+  // Two-level split for the same reason .post-card / .post-card__shape are split in
+  // _blog.scss: the inner element clips (rounded corners + overflow hidden) while the
+  // outer element stays overflow-visible so the post-number badge can overhang the
+  // bottom border seam without being cut off.
+  .post-feature-card {
+    position: relative;
+    border-radius: 14px;
+    background: var(--code-background);
+    @extend %margin-post;
+
+    &::before {
+      content: '';
+      position: absolute;
+      left: 50%;
+      bottom: 100%;
+      width: 100vw;
+      transform: translateX(-50%);
+      height: 3vw;
+      pointer-events: none;
+    }
+
+    @media screen and (max-width: $sm-break) {
+      border-radius: 10px;
+    }
+  }
+
+  .post-feature-card__shape {
+    border-radius: inherit;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    background: var(--code-background);
+    border: 1px solid var(--border);
+  }
+
+  // The card itself now supplies the viewport-relative horizontal inset (via %margin-post
+  // above), so .post-content only needs a modest fixed internal gutter for text legibility
+  // against the card's own edges - not the large, viewport-relative %padding-post scale
+  // (that would double-indent the body text relative to the image). Vertical spacing
+  // (and padding-bottom: 0 from .feature-image) is left untouched.
+  .post-content {
+    padding-left: $padding-medium;
+    padding-right: $padding-medium;
+
+    @media screen and (max-width: $sm-break) {
+      padding-left: $padding-small;
+      padding-right: $padding-small;
+    }
+  }
+
+  // Chamfered post-number badge, overhanging the card's bottom-left corner.
+  .post-feature-card__index {
+    position: absolute;
+    left: 14px;
+    bottom: -12px;
+    z-index: 2;
+    padding: 4px 12px;
+    font-weight: 700;
+    font-size: 0.8em;
+    letter-spacing: 0.05em;
+    background: var(--accent-gradient);
+    color: #05070a;
+    @include cut-corners(8px);
+
+    @media screen and (max-width: $sm-break) {
+      left: 10px;
+      bottom: -10px;
+      padding: 3px 9px;
+      font-size: 0.72em;
+    }
+  }
+}
+
+.post-content {
+  h1 { color: var(--h1); }
+  h2 { color: var(--h2); }
+  h3 { color: var(--h3); }
+  h4 { color: var(--h4); }
+  h5 { color: var(--h5); }
+  h6 { color: var(--h6); }
+
+  a {
+    :visited {
+      filter: saturate(0.7);
+    }
+  }
+}
