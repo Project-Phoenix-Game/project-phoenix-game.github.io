@@ -2,6 +2,10 @@ project-phoenix-team: # author-id
   name: "Project Phoenix Team"
   avatar: "assets/img/authors/project-phoenix-team.png"
   url:
+helene:
+  name: "Hélène"
+  avatar: "assets/img/authors/helene.png"
+  url:
 unknown:
   name: Unknown
   avatar:

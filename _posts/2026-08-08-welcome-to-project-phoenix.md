@@ -1,11 +1,12 @@
 ---
 layout: post
 title: "Welcome to Project Phoenix"
-author: project-phoenix-team
+author: helene
 feature-img: "assets/img/feature-img/placidplace-space-7709489.jpg"
 thumbnail: "assets/img/feature-img/placidplace-space-7709489.jpg"
 categories: Devlog
 tags: [Main Update]
+date: 2026-08-10
 pinned: true
 ---
 
