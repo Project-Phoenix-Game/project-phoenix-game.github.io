@@ -6,7 +6,8 @@ feature-img: assets/img/feature-img/willgard-spaceship-5570682.jpg
 thumbnail: assets/img/feature-img/willgard-spaceship-5570682.jpg
 categories: Devlog
 tags: [Gameplay]
-date: 2026-08-15
+date: 2026-08-15 13:00:00
+excerpt: "A breakdown of Project Phoenix's core game loop – jumping into clusters, building operations, dec, the when to move on – plus a look at Expeditions, the time-limited instances layered on top."
 pinned: false
 ---
 

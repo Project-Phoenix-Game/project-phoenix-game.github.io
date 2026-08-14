@@ -6,7 +6,8 @@ feature-img: "assets/img/feature-img/placidplace-space-7709489.jpg"
 thumbnail: "assets/img/feature-img/placidplace-space-7709489.jpg"
 categories: Devlog
 tags: [Main Update]
-date: 2026-08-10
+date: 2026-08-10 13:00:00
+excerpt: "We're building a persistent, alliance-driven 4X space MMO – and this is t it takes to get there.re how, why, and everything it takes to get there."
 pinned: true
 ---
 
@@ -36,7 +37,7 @@ Project Phoenix is a serious project for us, but it's something we're building a
 
 Right now, the plan is:
 
-1. Lay down our core concepts / gameplay ideas
+1. Lay down our core concepts and gameplay ideas.
 2. Build a basic working version (vertical slice) before tackling complex systems.
 3. Iterate toward a first playable alpha with the core systems in place from feedback & experience from vertical slice.
 4. Expand content and features, then move toward a broader beta.
