@@ -1,6 +1,7 @@
 # SITE CONFIGURATION
 baseurl: ""
 url: "https://project-phoenix-game.github.io"
+timezone: "UTC"
 
 # THEME-SPECIFIC CONFIGURATION
 title: Project Phoenix                                  # site's title
