@@ -28,6 +28,7 @@ color_image: /assets/img/lineart.png                    # A bit transparent for 
 katex: true                                             # Enable if using math markup
 mermaid: default                                        # Enable mermaid-js for diagrams, use theme: base, forest, dark, default, neutral
 google_analytics:                                       # Measurement ID, e.g. "G-00000"
+goatcounter: project-phoenix-game                       # GoatCounter site code, e.g. "phoenixgame" for phoenixgame.goatcounter.com
 cookie_consent: false                                   # To respect the usage of cookies
 
 # PAGINATION
