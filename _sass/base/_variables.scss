@@ -52,8 +52,6 @@ $x-sm-break: 320px;
  * pulled directly from https://www.nihilum-rp.fr/'s own theme-switcher: accent
  * (--a: #1298b0 / --a2: #17add0) and greys (--void: #26282b, --deep: #2c2f33, --card: #3b4045,
  * --line: rgba(255,255,255,.07)).
- * --nav-fade is the solid-grey navbar fade color (Nihilum uses a grey vignette at the very
- * top of the page instead of a colored wash).
  *
  * --accent-gradient / --accent-glow / --brand-accent-2 are new tokens (not in the original theme)
  * consumed by the navbar wordmark, hero call-out, post-card hovers, buttons and accordion chevrons.
@@ -81,7 +79,6 @@ $x-sm-break: 320px;
   --accent-gradient: linear-gradient(90deg, #1298B0 0%, #17ADD0 50%, #5FE8F5 100%);
   --accent-glow: rgba(18, 152, 176, 0.35);
   --brand-accent-2: #17ADD0;
-  --nav-fade: #26282B;
   --cusdis--color-text-default: var(--text);
   --cusdis--color-comment-username-text: var(--link);
 }

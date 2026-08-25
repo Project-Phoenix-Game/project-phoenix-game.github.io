@@ -19,12 +19,8 @@
   top: 0;
   z-index: 10;
   --site-header-overlay-height: 96px;
-  // Solid-grey top-anchored fade (--nav-fade), stretched across most of the header's height
-  // (not cut off at nihilum-rp.fr's ~35%, which was tuned for their much taller hero image)
-  // so backdrop-filter's blur/saturate has room to actually show through the semi-transparent
-  // portion instead of hitting a wall of opaque --background partway down and reading as a
-  // flat solid bar.
-  background: linear-gradient(180deg, var(--nav-fade) 0%, rgba(0, 0, 0, 0.35) 25%, rgba(0, 0, 0, 0.1) 55%, transparent 90%);
+  // No background fill of its own - just the blur/saturate below (a "frosted glass" look,
+  // letting whatever's scrolled behind show through) plus the border-bottom for a clean edge.
   border-bottom: 1px solid var(--border);
   backdrop-filter: blur(20px) saturate(1.6);
   -webkit-backdrop-filter: blur(20px) saturate(1.6);
