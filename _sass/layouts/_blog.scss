@@ -8,7 +8,13 @@
   @extend %padding-header;
   position: relative;
   overflow: hidden;
-  display: inline-block;
+  // flex + centered on both axes instead of inline-block: the title (and subtitle, on
+  // page.liquid pages) used to just sit wherever normal block flow put it - near the top,
+  // with any extra room from the height floor left empty below it - rather than actually
+  // centered in the box.
+  display: flex;
+  align-items: center;
+  justify-content: center;
   width: 100%;
   height: 100%;
   font-size: 1.2em;
@@ -20,7 +26,9 @@
   background-color: var(--header-background);
 
   // Height floor shared with the single-post hero (.post-feature header#main, _posts.scss) so
-  // every full-bleed hero across the site reads as the same band.
+  // every full-bleed hero across the site reads as the same band. Responsive (taller on wider
+  // screens) here - overridden to a single fixed height for page.liquid pages specifically,
+  // below.
   min-height: $hero-min-height;
 
   @media screen and (min-width: $break) {
@@ -83,6 +91,41 @@
   }
 }
 
+// page.liquid pages (About/Gallery/Categories/Tags/Search - always a <header>) get one fixed
+// height at every width instead of .hero's own responsive floor above, which home (always a
+// <div>) keeps unchanged - 400px above $break, dropping to the shorter $hero-min-height-small
+// (260px, also shared with the post hero's own smallest tier) at $break and below, same
+// mobile/desktop split as everything else on the site.
+//
+// An actual height, not another min-height: %padding-header's own vertical padding (extended
+// into .hero above) is a *percentage of width*, so it - not the min-height floor - is what was
+// actually driving the height taller on wider screens; min-height alone only holds at the
+// widths narrow enough that padding+content still comes in under it. Locking padding-top/
+// bottom to fixed px alongside the fixed height (instead of leaving them at their inherited
+// percentages) is what keeps that padding from overflowing a real height at wide viewports -
+// #main's own padding-top override (below) still adds the sticky-nav clearance on top of it.
+//
+// The ID in `header#main` is what wins all of this over .hero's own (media-scoped, class-only)
+// rules regardless of source order or which of them matches at a given width.
+header#main.hero {
+  // min-height and height aren't rivals for the cascade to pick between (specificity only
+  // arbitrates between rules setting the *same* property) - the used height is effectively
+  // max(height, min-height), so .hero's own min-height: $hero-min-height-wide (above, active
+  // from $break up) would otherwise still win height out from under this at wider viewports.
+  min-height: 400px;
+  height: 400px;
+  // Same sticky-nav clearance #main's own padding-top adds (below) - this selector's higher
+  // specificity (an extra class alongside the same #main ID) would otherwise replace that
+  // whole declaration outright, dropping the clearance instead of just fixing the pixel value.
+  padding-top: calc(var(--site-header-overlay-height, 96px) + 16px);
+  padding-bottom: 16px;
+
+  @media screen and (max-width: $break) {
+    min-height: $hero-min-height-small;
+    height: $hero-min-height-small;
+  }
+}
+
 // The actual photo, on its own layer instead of directly on .hero: sized past the visible box
 // on every edge (inset: -8%, clipped by .hero's own overflow: hidden) so background-size:
 // cover - which crops just enough to fill the box and not a pixel more - always has that
@@ -96,10 +139,20 @@
   pointer-events: none;
   background-repeat: no-repeat;
   background-size: cover;
-  // --parallax-offset is written by navbar.js's scroll listener (0px until the first scroll
-  // event fires), so scrolling down reveals more of the image's lower portion. Centered
-  // (not a right-aligned 100%) so the crop stays centered on screens narrower than the image.
-  background-position: center calc(-50px + var(--parallax-offset, 0px));
+  // Truly centered on both axes at rest: a bare length (no % in it at all) in
+  // background-position anchors to the top/left edge, not the middle, so a plain
+  // `calc(-50px + var(--parallax-offset))` here (no 50% term) was never actually centered
+  // vertically - just top-anchored and nudged. The 50% base is what centers it; the clamped
+  // offset added on top is --parallax-offset (written by navbar.js's scroll listener, 0 until
+  // the first scroll event), so scrolling down reveals more of the image's lower portion.
+  //
+  // Clamped to -15px rather than following the scroll unbounded: .hero-bg's own -8% inset
+  // above guarantees at least ~16% of the box's height as crop margin *when the crop stays
+  // centered*, but that guarantee assumes the offset never shifts far enough to eat past one
+  // side of it - and unclamped, scrolling far enough always eventually would. -15px stays
+  // safely inside that margin even at the shortest hero (header#main.hero's mobile 260px
+  // tier - the -8% inset gives it ~20px of margin per side).
+  background-position: center calc(50% + clamp(-15px, var(--parallax-offset, 0px), 0px));
   // Named so the @view-transition opt-in (_global.scss) crossfades specifically this layer
   // between pages, instead of (or on top of) the whole page doing a single flat crossfade.
   // Safe to reuse the same name across pages - it only needs to be unique *within* one page's

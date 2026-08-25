@@ -10,7 +10,7 @@ avatar:                                                  # Empty for no avatar i
 favicon: assets/favicon.ico                             # Icon displayed in the tab
 
 # Header and footer text
-header_text:                                            # Empty for no title over the home hero image
+header_text: "Command a fleet. Conquer the void. Rise from the ashes." # Empty for no title over the home hero image
 header_feature_image: assets/img/header/willgard-space-4401094.jpg
 header_feature_image_responsive: false                  # No -medium/-small variants exist for the header image
 footer_text: >
