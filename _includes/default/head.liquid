@@ -43,8 +43,11 @@
     <script defer src="{{ '/assets/js/vendor/mermaid.min.js' | relative_url }}"></script>
     {% endif %}
 
-    <!-- Simple Jekyll Search 1.10.0 -->
+    <!-- Simple Jekyll Search 1.10.0 - only the search page actually calls SimpleJekyllSearch()
+         (search.liquid), so it's the only page that needs this loaded at all. -->
+    {% if page.layout == 'search' %}
     <script src="{{ '/assets/js/vendor/simple-jekyll-search.min.js' | relative_url }}" type="text/javascript"></script>
+    {% endif %}
 
     <!-- Google Analytics / Cookie Consent -->
     <script>
