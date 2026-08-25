@@ -95,7 +95,12 @@
     <meta name="twitter:creator" content="@{{ site.data.social.twitter }}">
     <meta name="twitter:site" content="@{{ site.data.social.twitter }}">
     {% endif %}
-    <meta name="twitter:card" content="{% unless page.thumbnail %}summary{% else %}summary_large_image{% endunless %}">
+    <!-- summary_large_image only for pages with a real wide banner thumbnail (posts' own
+         feature images) - the home page also sets page.thumbnail now (the square team logo,
+         for a better link-preview image than the site's generic header photo), but that's
+         the wrong shape for the large-image layout: it renders as a big square block instead
+         of the compact small-image card the logo actually suits. -->
+    <meta name="twitter:card" content="{% if page.thumbnail and page.url != '/' %}summary_large_image{% else %}summary{% endif %}">
     <meta name="twitter:image" content="{{ '/' | absolute_url }}{% if page.thumbnail %}{{ page.thumbnail }}{% else %}{{ page.feature-img | default: site.header_feature_image }}{% endif %}">
     <meta name="twitter:image:alt" content="{{ page.title | default: site.title }}">
 </head>
