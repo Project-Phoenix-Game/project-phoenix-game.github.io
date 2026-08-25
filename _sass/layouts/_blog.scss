@@ -414,69 +414,47 @@ header#main.call-out {
         color: var(--text);
       }
     }
+
   }
 
-  // --- Horizontal layout: rows with a single card (pinned) or two cards ---
-  // Media on the left (with title/badges overlaid), solid body on the right
-  // (excerpt + author/time footer) - matches nihilum-rp.fr's list-row cards.
-  // Excluded on .facet-grid (Categories/Tags): those pages have no single pinned post, so
-  // every card renders in the uniform "3-per-row" vertical layout instead.
-  .post-card--pinned,
-  &:not([data-has-pinned="true"]):not(.facet-grid) .post-card:nth-child(1),
-  &:not([data-has-pinned="true"]):not(.facet-grid) .post-card:nth-child(2),
-  &[data-has-pinned="true"] .post-card:nth-child(2),
-  &[data-has-pinned="true"] .post-card:nth-child(3) {
-    .post-card__shape {
-      flex-direction: row;
-    }
+  // Only the pinned post gets the horizontal (image-left, text-right) treatment - every other
+  // card (featured-slot or regular) stays vertical (image-top, text-below) always, regardless
+  // of its own width. Below $sm-break the grid is already a single column and everything,
+  // pinned included, is plain vertical too - horizontal only kicks in once there's a genuinely
+  // wide row to lay it out across. Matches nihilum-rp.fr's list-row card for the one post that
+  // gets it.
+  .post-card--pinned {
+    grid-column: 1 / -1;
 
-    .post-card__media {
-      flex: 0 0 42%;
-      // Left-to-right fade + separator instead of the vertical-layout's top-to-bottom one:
-      // the image resolves into the body panel's color at its *right* edge, where the
-      // text section begins, matching nihilum-rp.fr's forum-cover (grid) card treatment.
-      border-bottom: 0;
-      border-right: 1px solid rgb(78, 83, 89);
-
-      &::before {
-        background:
-          linear-gradient(180deg, transparent 0%, rgba(0, 0, 0, 0.55) 100%),
-          linear-gradient(to right, transparent 0%, transparent 55%, var(--code-background) 100%);
-      }
-    }
-
-    .post-card__body {
-      padding: 20px 24px;
-      justify-content: center;
-    }
-
-    .post-card__title {
-      font-size: 1.3em;
-    }
-
-    @media screen and (max-width: $break) {
+    @media screen and (min-width: $sm-break + 1px) {
       .post-card__shape {
-        flex-direction: column;
+        flex-direction: row;
       }
 
       .post-card__media {
-        flex: 0 0 200px;
-        border-right: 0;
-        border-bottom: 1px solid rgb(78, 83, 89);
+        flex: 0 0 42%;
+        // Left-to-right fade + separator instead of the vertical-layout's top-to-bottom one:
+        // the image resolves into the body panel's color at its *right* edge, where the
+        // text section begins, matching nihilum-rp.fr's forum-cover (grid) card treatment.
+        border-bottom: 0;
+        border-right: 1px solid rgb(78, 83, 89);
 
         &::before {
-          background: linear-gradient(to top, var(--code-background) 0%, rgba(0, 0, 0, 0.6) 30%, rgba(0, 0, 0, 0.08) 65%, transparent 100%);
+          background:
+            linear-gradient(180deg, transparent 0%, rgba(0, 0, 0, 0.55) 100%),
+            linear-gradient(to right, transparent 0%, transparent 55%, var(--code-background) 100%);
         }
       }
 
       .post-card__body {
-        padding: 14px 16px 16px;
+        padding: 20px 24px;
+        justify-content: center;
+      }
+
+      .post-card__title {
+        font-size: 1.3em;
       }
     }
-  }
-
-  .post-card--pinned {
-    grid-column: 1 / -1;
   }
 
   // span 3 is "half" only for the 6-column grid above - grid-template-columns steps down to
