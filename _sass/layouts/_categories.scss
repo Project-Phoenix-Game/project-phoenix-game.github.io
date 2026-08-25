@@ -227,6 +227,16 @@ article.categories-page {
       flex-direction: column;
     }
 
+    // .facet-layout's align-items: flex-start (above) is deliberate on the desktop/row axis
+    // (rail and grid top-align instead of stretching to match heights), but once flipped to
+    // column here that same align-items governs the *horizontal* axis instead - without an
+    // explicit width, .facet-main shrank to its content's own intrinsic size (which, for an
+    // auto-fit/minmax grid with no definite container width to resolve against, collapses to
+    // a single minmax-floor-wide track) instead of filling the stacked column's full width.
+    .facet-main {
+      width: 100%;
+    }
+
     .facet-rail {
       position: static;
       width: 100%;

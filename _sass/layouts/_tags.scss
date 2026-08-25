@@ -360,6 +360,14 @@ article.tags-page {
       flex-direction: column;
     }
 
+    // See _categories.scss's identical fix for why this is needed: .facet-layout's
+    // align-items: flex-start (above) governs the horizontal axis once it flips to column
+    // here, and without an explicit width .facet-main shrinks to its content's own intrinsic
+    // size instead of filling the stacked column's full width.
+    .facet-main {
+      width: 100%;
+    }
+
     .facet-rail {
       position: static;
       width: 100%;
