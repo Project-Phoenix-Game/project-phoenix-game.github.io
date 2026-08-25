@@ -405,11 +405,22 @@ header#main.hero {
 
     .post-card__excerpt {
       flex: 1 1 auto;
+      // Flex items default to min-height: auto, which lets their intrinsic content height
+      // override -webkit-line-clamp below once the excerpt text is long enough - the box
+      // stretches to fit every line instead of actually clipping at the line count, so the
+      // ellipsis and the clipped-off lines both end up rendering. min-height: 0 is the
+      // standard fix: it lets this flex item shrink below its content's natural height, so
+      // line-clamp's own cap is what determines the box's height instead.
+      min-height: 0;
       color: var(--meta);
       font-size: 0.9em;
       line-height: 1.45;
       display: -webkit-box;
       -webkit-box-orient: vertical;
+      // 3 lines is tuned for the vertical (image-top, text-below) layout every card uses by
+      // default - .post-card--pinned overrides this to 8 for its own much taller horizontal
+      // (image-left, text-right) layout below, where 3 lines would leave most of the panel
+      // empty.
       -webkit-line-clamp: 3;
       line-clamp: 3;
       overflow: hidden;
@@ -495,6 +506,15 @@ header#main.hero {
       .post-card__body {
         padding: 20px 24px;
         justify-content: center;
+      }
+
+      // See .post-card__excerpt's own base rule (above) for why this is 3 there - the
+      // horizontal layout's text panel is much taller than the vertical layout's (image is
+      // beside it, not above it, so nothing but the title/badges caps its height), so 3
+      // lines would leave most of the panel sitting empty.
+      .post-card__excerpt {
+        -webkit-line-clamp: 8;
+        line-clamp: 8;
       }
 
       .post-card__title {
