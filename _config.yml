@@ -5,7 +5,7 @@ timezone: "UTC"
 
 # THEME-SPECIFIC CONFIGURATION
 title: Project Phoenix                                  # site's title
-description: "Dev blog for Project Phoenix (working title) - a 4X space opera MMORTS"  # used by search engines
+description: "A persistent, alliance-driven 4X space opera MMORTS in development - follow along as we build it, from early design decisions to the problems we run into along the way."  # used by search engines and social link previews
 avatar:                                                  # Empty for no avatar in navbar (text-only wordmark)
 favicon: assets/favicon.ico                             # Icon displayed in the tab
 
