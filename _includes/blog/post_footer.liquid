@@ -35,10 +35,9 @@
         {% endif %}
     </style>
 
-    <!-- Post navigation -->
-    {% if site.post_navigation or site.theme_settings.post_navigation %}
-        {% include blog/post_nav.liquid %}
-    {% endif %}
+    <!-- Post navigation now lives in post.liquid, before the category/tag/share section
+         (moved there so previous/next comes first, matching the rest of the article's
+         section order) -->
 
     <!-- Giscus -->
     {% if site.data.comments.giscus.repo and site.data.comments.giscus.repo-id and site.data.comments.giscus.category-id and site.data.comments.giscus.mapping %}

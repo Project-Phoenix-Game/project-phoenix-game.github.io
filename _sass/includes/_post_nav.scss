@@ -2,6 +2,9 @@
   width: 100%;
   display: inline-block;
   @extend %padding-nav;
+  // Same divider style as .comments' own border-bottom (_posts.scss) - separates this
+  // previous/next block from the category/tag section right below it in post.liquid.
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
 
   a {
     width: 100%;

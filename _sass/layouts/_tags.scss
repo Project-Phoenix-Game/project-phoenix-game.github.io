@@ -10,8 +10,11 @@
   gap: 0.4em 1em;
   width: 100%;
   // Swapped with ul.share-buttons's own padding (_share_buttons.scss) now that this block
-  // renders before it (post.liquid) instead of after.
-  padding: 1.5% 0 3% 0;
+  // renders before it (post.liquid) instead of after. Fixed px, not %: a percentage vertical
+  // value keeps growing with the viewport's width, not something that makes sense for a
+  // simple top/bottom gap.
+  padding-top: 16px;
+  padding-bottom: 32px;
 }
 
 article.tags-page {

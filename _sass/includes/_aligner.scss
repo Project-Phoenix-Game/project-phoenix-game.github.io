@@ -6,7 +6,10 @@
   flex-direction: row;
   align-items: center;
   justify-content: center;
-  padding: 0.9% 0 1.5% 0;
+  // Fixed px, not %: see %padding-post's own comment (_utility.scss) for why a vertical
+  // percentage doesn't make sense here.
+  padding-top: 8px;
+  padding-bottom: 16px;
 }
 
 .caption-style {

@@ -45,6 +45,11 @@ layout: default
         <span class="post-feature-card__index" data-testid="post-index" aria-label="Post number">#{{ _post_number | strip }}</span>
     </div>
 
+    <!-- Previous/next post navigation -->
+    {% if site.post_navigation or site.theme_settings.post_navigation %}
+        {% include blog/post_nav.liquid %}
+    {% endif %}
+
     <!-- Category and Tag list -->
     <div class="tag-category-container">
         <!-- Category list -->

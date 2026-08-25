@@ -1,8 +1,9 @@
 ul.share-buttons {
   list-style: none;
   // Swapped with .tag-category-container's own padding (_tags.scss) now that share sits
-  // after it (post.liquid) instead of before.
-  padding-bottom: $padding-x-small;
+  // after it (post.liquid) instead of before. Fixed px, not %: see %padding-post's own
+  // comment (_utility.scss) for why a vertical percentage doesn't make sense here.
+  padding-bottom: 32px;
   margin: 0;
   display: flex;
   flex-wrap: wrap;

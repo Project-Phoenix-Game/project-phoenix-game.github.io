@@ -55,13 +55,26 @@ article.gallery-page {
 /* ---- grid ---- */
 
 .grid {
-  padding-bottom: 6%;
+  // Fixed px, not %: see %padding-post's own comment (_utility.scss) for why a vertical
+  // percentage doesn't make sense here - it only ever grows with the viewport's width.
+  padding-bottom: 60px;
 
   /* clear fix */
   &:after {
     content: '';
     display: block;
     clear: both;
+  }
+
+  // When gallery.html finds no images, .grid still renders (with just its own invisible
+  // .grid-sizer/.gutter-sizer helper divs, no .grid-item content) right before .gallery-empty
+  // - its padding-bottom above (and Masonry's own layout) was reserving real vertical space
+  // for a grid with nothing in it, pushing .gallery-empty down with a gap that made no sense.
+  // Collapsing it out of flow entirely (rather than zeroing its padding specifically) is the
+  // more robust fix - Masonry still initializes on it fine (there's nothing for it to lay out
+  // either way), it just no longer takes up any space doing so.
+  &:has(+ .gallery-empty) {
+    display: none;
   }
 }
 
@@ -76,7 +89,9 @@ article.gallery-page {
 .grid-item {
   display: block;
   float: left;
-  margin-bottom: 1%;
+  // Fixed px, not %: same reasoning as .grid's own padding-bottom above - this is the gap
+  // between photo tiles, not something that should keep growing with the viewport's width.
+  margin-bottom: 10px;
   padding: 0;
   border: 0;
   background: none;

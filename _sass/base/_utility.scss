@@ -102,35 +102,56 @@
   }
 }
 
+// Vertical padding/margin below is fixed px, not %, on every one of these placeholders -
+// percentages resolve against the containing block's *width* even for top/bottom values, so a
+// "3% top/bottom" figure meant to read as a modest gap keeps growing right along with the
+// horizontal scale on wide/ultrawide monitors, ending up as 100+px of dead space top and
+// bottom with nothing capping it. The horizontal component is left as-is (that growth is the
+// actual point of the horizontal scale, giving wide screens a wider inset).
+
 %padding-nav {
-  padding: $padding-small $padding-x-large;
+  padding-top: 40px;
+  padding-bottom: 40px;
+  padding-left: $padding-x-large;
+  padding-right: $padding-x-large;
   @media (max-width: $xl-break) {
-    padding: $padding-small ($padding-large * 2);
+    padding-left: $padding-large * 2;
+    padding-right: $padding-large * 2;
   }
   @media (max-width: $l-break) {
-    padding: $padding-small $padding-large;
+    padding-left: $padding-large;
+    padding-right: $padding-large;
   }
   @media (max-width: $m-break) {
-    padding: $padding-small $padding-medium;
+    padding-left: $padding-medium;
+    padding-right: $padding-medium;
   }
   @media (max-width: $sm-break) {
-    padding: $padding-small $padding-x-small;
+    padding-left: $padding-x-small;
+    padding-right: $padding-x-small;
   }
 }
 
 %padding-post {
-  padding: $padding-x-small $padding-x-large;
+  padding-top: 32px;
+  padding-bottom: 32px;
+  padding-left: $padding-x-large;
+  padding-right: $padding-x-large;
   @media (max-width: $xl-break) {
-    padding: $padding-x-small ($padding-large * 2);
+    padding-left: $padding-large * 2;
+    padding-right: $padding-large * 2;
   }
   @media (max-width: $l-break) {
-    padding: $padding-x-small $padding-large;
+    padding-left: $padding-large;
+    padding-right: $padding-large;
   }
   @media (max-width: $m-break) {
-    padding: $padding-x-small $padding-medium;
+    padding-left: $padding-medium;
+    padding-right: $padding-medium;
   }
   @media (max-width: $sm-break) {
-    padding: $padding-x-small $padding-small;
+    padding-left: $padding-small;
+    padding-right: $padding-small;
   }
 }
 
@@ -138,28 +159,44 @@
 // (like .post-feature-card) that need to sit inset from the viewport edge as a
 // contained block rather than have internal background-colored padding.
 %margin-post {
-  margin: $padding-x-small $padding-x-large;
+  margin-top: 32px;
+  margin-bottom: 32px;
+  margin-left: $padding-x-large;
+  margin-right: $padding-x-large;
   @media (max-width: $xl-break) {
-    margin: $padding-x-small ($padding-large * 2);
+    margin-left: $padding-large * 2;
+    margin-right: $padding-large * 2;
   }
   @media (max-width: $l-break) {
-    margin: $padding-x-small $padding-large;
+    margin-left: $padding-large;
+    margin-right: $padding-large;
   }
   @media (max-width: $m-break) {
-    margin: $padding-x-small $padding-medium;
+    margin-left: $padding-medium;
+    margin-right: $padding-medium;
   }
   @media (max-width: $sm-break) {
-    margin: $padding-x-small $padding-small;
+    margin-left: $padding-small;
+    margin-right: $padding-small;
   }
 }
 
 %padding-header {
-  padding: $padding-medium $padding-large;
+  padding-top: 60px;
+  padding-bottom: 60px;
+  padding-left: $padding-large;
+  padding-right: $padding-large;
   @media (min-width: $xl-break) {
-    padding: $padding-large $padding-large;
+    padding-top: 90px;
+    padding-bottom: 90px;
+    padding-left: $padding-large;
+    padding-right: $padding-large;
   }
   @media (max-width: $sm-break) {
-    padding: $padding-large;
+    padding-top: 48px;
+    padding-bottom: 48px;
+    padding-left: $padding-large;
+    padding-right: $padding-large;
   }
 }
 

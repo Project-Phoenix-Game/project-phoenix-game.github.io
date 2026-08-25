@@ -15,7 +15,9 @@ article {
   @extend .comments;
 
   header {
-    margin-bottom: 6%;
+    // Fixed px, not %: a percentage here grows with the viewport's *width* even though this
+    // is a vertical gap, ballooning on wide screens instead of staying a modest fixed gap.
+    margin-bottom: 60px;
     text-align: center;
   }
 
@@ -144,7 +146,12 @@ header {
   header {
     color: var(--header-text);
     margin-bottom: 0;
-    padding: 3.6% $padding-large;
+    // Vertical fixed px (see %padding-header's own comment, _utility.scss, for why) - horizontal
+    // stays $padding-large, the viewport-relative inset that's actually meant to grow.
+    padding-top: 36px;
+    padding-bottom: 36px;
+    padding-left: $padding-large;
+    padding-right: $padding-large;
 
     .meta, .meta-separator, .last-modified {
       color: var(--header-text);
@@ -195,6 +202,13 @@ header {
  * pages, still centered) are unaffected.
  */
 .post-feature {
+  // Cancels the border-bottom every <article> inherits from .comments (_posts.scss, top of
+  // file) - that line used to sit at the very bottom of the whole article (after the share
+  // buttons, the last thing in it). #post-nav now carries the same divider style itself
+  // (_post_nav.scss), in the middle of the article between the nav and the category/tag
+  // section - so the one down here was just a redundant second line.
+  border-bottom: none;
+
   // header#main is a full-bleed hero, a direct sibling of .post-feature-card (not wrapped
   // by it) - so it keeps the sitewide #main negative-top-margin/backdrop-clearance hack
   // (_global.scss) that tucks it directly under the sticky nav, same as the home hero.
