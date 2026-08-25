@@ -384,6 +384,28 @@ header#main.hero {
       @extend %badge-tag;
     }
 
+    // Pinned posts sit first in the grid regardless of date (blog.liquid pulls the pinned
+    // post out of chronological order and always renders it first) - without some visible
+    // marker, a pinned post that's actually *older* than the ones after it just reads as a
+    // broken sort. A plain icon (no chip/background) in the corner, same blue as the site's
+    // titles/links (var(--link)/var(--h1) are the same color) rather than another badge
+    // competing with the real category/tag ones.
+    .post-card__pin-icon {
+      position: absolute;
+      // Inset clear of the top-left corner: .post-card__shape's own cut-corners(20px)
+      // (below) chamfers that exact corner, so anything sitting flush against it would get
+      // clipped by the cut.
+      top: 12px;
+      left: 16px;
+      z-index: 2;
+      font-size: 1.1em;
+      color: var(--link);
+      // Font Awesome's thumbtack glyph points straight up/down - rotating it is the only way
+      // to get a "leaning" pin, there's no separate leaning variant in the icon set itself.
+      transform: rotate(35deg);
+      filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.6));
+    }
+
     .post-card__title {
       margin: 0;
       font-family: $font-family-headings;

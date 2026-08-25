@@ -26,6 +26,10 @@
   <div class="post-card__shape">
     <a aria-label="{{ post.title }}" class="post-card__link" data-testid="blog-post-link" href="{{ post.url | relative_url }}"></a>
 
+    {% if pinned %}
+      <i class="post-card__pin-icon fas fa-thumbtack" role="img" aria-label="Pinned post" title="Pinned"></i>
+    {% endif %}
+
     <div class="post-card__media">
       <div class="post-card__media-content">
         {% if post.categories.size > 0 or post.tags.size > 0 %}
