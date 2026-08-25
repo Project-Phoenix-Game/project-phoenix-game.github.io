@@ -4,6 +4,19 @@
   box-sizing: border-box;
 }
 
+// Opts every same-origin navigation into a cross-document view transition (Chromium 126+ -
+// a pure progressive enhancement, silently ignored everywhere else, no JS involved). Without
+// it, every navigation is a hard cut: old page gone, new page painted from scratch, which is
+// what reads as "the header image reloading" between pages that mostly share the same one
+// (site.header_feature_image - see page.liquid/home.liquid) - the browser has no way to know
+// the two are related and just repaints it from zero every time. With it, the browser
+// automatically crossfades between the old and new page's rendered state instead - .hero-bg
+// additionally gets its own view-transition-name (_blog.scss) so that crossfade is scoped
+// tightly to the image itself rather than the whole page.
+@view-transition {
+  navigation: auto;
+}
+
 figure {
   margin: 0;
 }

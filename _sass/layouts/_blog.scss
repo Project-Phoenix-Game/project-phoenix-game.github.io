@@ -100,6 +100,11 @@
   // event fires), so scrolling down reveals more of the image's lower portion. Centered
   // (not a right-aligned 100%) so the crop stays centered on screens narrower than the image.
   background-position: center calc(-50px + var(--parallax-offset, 0px));
+  // Named so the @view-transition opt-in (_global.scss) crossfades specifically this layer
+  // between pages, instead of (or on top of) the whole page doing a single flat crossfade.
+  // Safe to reuse the same name across pages - it only needs to be unique *within* one page's
+  // own snapshot, and .hero-bg only ever appears once per page.
+  view-transition-name: hero-bg;
 }
 
 #main {
