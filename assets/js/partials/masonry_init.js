@@ -5,7 +5,12 @@ try {
     itemSelector: '.grid-item',
     columnWidth: '.grid-sizer',
     gutter: '.gutter-sizer',
-    percentPosition: true
+    percentPosition: true,
+    // Masonry defaults to animating (CSS transform transition) every reposition - with
+    // layout() re-running as each image finishes loading below (imagesLoaded's 'progress'
+    // handler), an item placed early can visibly slide/jump across the grid once a later
+    // image's real dimensions change the packing. Instant repositioning instead.
+    transitionDuration: 0
   });
 
   // layout Masonry after each image loads
