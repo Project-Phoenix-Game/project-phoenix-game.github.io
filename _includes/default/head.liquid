@@ -14,6 +14,11 @@
     <link rel="stylesheet" href="{{ '/assets/css/main.css' | relative_url }}">
 
     <!--Favicon-->
+    <!-- SVG (phoenix emoji) first - modern browsers prefer it over the .ico below regardless of
+    source order, since rel="icon" + a supported type wins over rel="shortcut icon" whenever
+    both are present. The .ico stays as the fallback for the few browsers that don't support
+    SVG favicons at all. -->
+    <link rel="icon" href="{{ '/assets/favicon.svg' | relative_url }}" type="image/svg+xml">
     <link rel="shortcut icon" href="{{ site.favicon | relative_url }}" type="image/x-icon">
 
     <!-- Preconnect to Cusdis for faster loading when comments become visible -->
