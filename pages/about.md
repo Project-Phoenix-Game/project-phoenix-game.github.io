@@ -5,13 +5,18 @@ permalink: /about/
 tags: [Page]
 ---
 
-**Project Phoenix** *(working title)* is a 4X space-opera MMORTS currently in development — a spiritual remake
-built from the ashes of an older title, *Time Of Defiance*. Command a fleet, expand across a persistent galaxy,
-exploit the void's resources, and exterminate whoever stands between you and the core worlds.
+**Project Phoenix** *(working title)* is a 4X space-opera MMORTS in development. Thousands of years from now,
+humanity has left Earth behind and scattered across the stars aboard countless stations – most barely surviving
+the drift, a few thriving, and fewer still daring to push into the unknown. Explore a persistent galaxy, expand
+your reach, exploit the void's resources, and go to war with whoever stands between you and the core worlds.
+Every choice you make ripples out to affect the players around you, and theirs, in turn, affect you.
 
-This site is the dev blog: chronicles from the build, design notes from the far rim, and dispatches as the game
-takes shape. Categories, tags, and post content on this site are currently placeholder copy standing in for the
-real devlogs to come — expect this page (and the rest of the site) to evolve alongside the game itself.
+We're a two-person team: one of us handles the back-end and the technical foundations, the other comes from a
+game development background working on player-facing systems and gameplay. Together we're building this from
+the ground up – design, systems, and tech alike.
+
+This site is our dev blog – design notes, progress updates, and dispatches from the far rim as the game takes
+shape. Expect it to evolve right alongside the game itself.
 
 *Follow along, and watch the phoenix take flight.*
 

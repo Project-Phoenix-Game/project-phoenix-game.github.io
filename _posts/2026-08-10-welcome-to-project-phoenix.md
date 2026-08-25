@@ -7,7 +7,7 @@ thumbnail: "assets/img/feature-img/placidplace-space-7709489.jpg"
 categories: Devlog
 tags: [Main Update]
 date: 2026-08-10 13:00:00
-excerpt: "We're building a persistent, alliance-driven 4X space MMO – and this is the blog where we'll share how, why, and everything it takes to get there."
+excerpt: "We're building a persistent, alliance-driven 4X space MMO – one where exploration, expansion, and the choices you make ripple out to shape a shared galaxy. This is the blog where we'll share how, why, and everything it takes to get there, from early design decisions to the problems we run into along the way."
 pinned: true
 ---
 
