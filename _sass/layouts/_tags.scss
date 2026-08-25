@@ -363,8 +363,16 @@ article.tags-page {
     .facet-rail {
       position: static;
       width: 100%;
+      // Reset the desktop layout's `flex: 0 0 230px` (below): that's a main-axis
+      // flex-basis meant for .facet-layout's desktop `row` direction, where it sets
+      // the rail's *width*. Once .facet-layout flips to `column` above, the same
+      // flex-basis gets reinterpreted as a *height* instead - and with align-items
+      // defaulting to stretch, every chip stretched to match, ballooning each one
+      // to ~230px tall. Wrap instead of horizontal-scrolling too, so a long tag
+      // list flows onto as many rows as it needs rather than hiding off-screen.
+      flex: none;
       flex-direction: row;
-      overflow-x: auto;
+      flex-wrap: wrap;
       padding-bottom: 6px;
     }
 

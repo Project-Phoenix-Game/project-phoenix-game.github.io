@@ -1,3 +1,29 @@
+// Plain content pages (About, Search, and any other page.liquid page without its own
+// tags-page/categories-page/gallery-page treatment) now always get a full-bleed hero
+// (page.liquid's header carries .call-out/.call-out_img, same classes as the home hero -
+// _blog.scss) via site.header_feature_image, whether or not the page sets its own
+// feature-img. Same "zero the article, let each section own its own inset" pattern as
+// article.tags-page/.categories-page/.gallery-page (_tags.scss/_categories.scss/
+// _gallery.scss): without it, the global `article { @extend .comments; }` rule
+// (_posts.scss) keeps its %padding-post inset, which would squeeze the header hero down
+// to a narrower column instead of the full-bleed width the home hero gets.
+.page-feature {
+  padding: 0;
+
+  .post-content {
+    @extend %padding-post;
+    // Divider under the hero, matching #tags/#categories/#gallery's own
+    // border-top (_tags.scss/_categories.scss/_gallery.scss) - those consoles
+    // draw it themselves, but plain content (About, Search, ...) has no such
+    // wrapper to carry it, so .post-content needs it directly.
+    border-top: 1px solid var(--border);
+  }
+
+  .tag-category-container {
+    @extend %padding-post;
+  }
+}
+
 .title-padder {
   padding: $title-padding;
 }

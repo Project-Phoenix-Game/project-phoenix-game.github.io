@@ -230,8 +230,14 @@ article.categories-page {
     .facet-rail {
       position: static;
       width: 100%;
+      // See _tags.scss's identical fix for why `flex: none` is needed here: without
+      // it, the desktop layout's `flex: 0 0 230px` (below) gets reinterpreted as a
+      // *height* once .facet-layout flips to `column` above, ballooning every chip
+      // to match via the default stretch alignment. Wrap instead of horizontal-
+      // scrolling too, so a long category list flows onto as many rows as needed.
+      flex: none;
       flex-direction: row;
-      overflow-x: auto;
+      flex-wrap: wrap;
       padding-bottom: 6px;
     }
 

@@ -32,7 +32,13 @@ $hero-min-height-small: 260px;  // $sm-break down
 $xl-break: 2000px;
 $l-break: 1400px;
 $m-break: 1000px;
-$break: 768px;
+// Doubles as the navbar's own hamburger/off-canvas switch (_navbar.scss). The desktop nav's
+// item list doesn't shrink or wrap; measured (site title + the full item row), it stops
+// fitting on one line and spills onto a second line under the title anywhere from 769px up
+// to ~968px - this being past that measured point (with some margin for narrower browser
+// chrome/scrollbars/a longer title) is what let it move up here instead of staying a separate
+// variable.
+$break: 1000px;
 $sm-break: 576px;
 $x-sm-break: 320px;
 

@@ -14,7 +14,7 @@
 }
 
 .site-header {
-  padding: 20px 50px 10px 50px;
+  padding: 15px 50px;
   position: sticky;
   top: 0;
   z-index: 10;
@@ -101,14 +101,6 @@ nav {
       color: var(--link);
       text-shadow: 0 0 8px var(--accent-glow);
     }
-
-    &#pull {
-      i {
-        margin-top: 22px;
-        margin-right: 18px;
-        float: right;
-      }
-    }
   }
 
   // Same treatment as the tags/categories quick-jump links (_tags.scss .tag-link):
@@ -135,51 +127,90 @@ nav {
 
 @media screen and (max-width: $break) {
   .site-header {
-    .site-title {
-      margin-top: 7px;
-    }
+    // Branding on the left, hamburger pinned to the right, both vertically
+    // centered against each other, instead of the desktop's inline-block flow.
+    // (No margin-top on .site-title here: that was a leftover nudge for the
+    // old non-flex layout and just pushed the title off-center against the
+    // hamburger now that align-items: center handles the alignment.)
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
   }
 
   nav {
     height: auto;
 
+    // The <ul> is pulled out of flow (see below) so all that's left inside
+    // <nav> in normal flow is the toggle button itself.
+    display: flex;
+    align-items: center;
+
     .separator {
       display: none !important;
     }
 
-    ul {
-      width: 100%;
-      overflow: hidden;
+    a#pull {
+      display: flex;
+      align-items: center;
+      justify-content: center;
 
-      /* fade out, then shrink */
-      transition: opacity .25s 0s, font-size .25s 0s;
-      transition-delay: 0s;
-
-      &.hide {
-        font-size: 0;
+      i {
         margin: 0;
-        opacity: 0;
-        padding: 0;
+      }
+    }
+
+    ul {
+      /* Off-canvas panel sliding in/out from the right, sitting below the
+       * top bar rather than overlapping or covering it. Anchored to
+       * --mobile-nav-offset (navbar.js measures .site-header's actual
+       * rendered height) rather than the shared --site-header-overlay-height
+       * guess used elsewhere (post hero offset, tags/categories rail) - that
+       * static px value doesn't reliably match the real header height once
+       * fonts/content reflow it, which is what caused the overlap. Same
+       * surface color as the rest of the header chrome (--header-background,
+       * also used for the blog/gallery header bands) instead of the page's
+       * flat --background, so it reads as part of the nav rather than a
+       * mismatched slab dropped on top of the page. */
+      position: fixed;
+      top: var(--mobile-nav-offset, 96px);
+      right: 0;
+      z-index: 20;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      width: min(65vw, 260px);
+      height: calc(100dvh - var(--mobile-nav-offset, 96px));
+      margin: 0;
+      padding: 16px 0;
+      overflow-y: auto;
+      // Semi-transparent + blurred rather than a flat fill, so it reads as
+      // glass continuing the top bar's own blur(20px) saturate(1.6) treatment
+      // instead of an opaque slab. rgba() spells out --header-background's
+      // #26282B since custom properties can't be alpha-adjusted inline.
+      background-color: rgba(38, 40, 43, 0.82);
+      backdrop-filter: blur(20px) saturate(1.6);
+      -webkit-backdrop-filter: blur(20px) saturate(1.6);
+      border-left: 1px solid var(--border);
+      box-shadow: -8px 0 24px rgba(0, 0, 0, 0.25);
+      transform: translateX(100%);
+      transition: transform .3s ease;
+
+      &:not(.hide) {
+        transform: translateX(0);
       }
     }
 
     li {
       width: 100%;
-      text-align: center;
+      text-align: right;
       font-size: 1em;
       margin: 0;
-      background-color: var(--background);
-      backdrop-filter: brightness(0.98);
-
-      &:nth-of-type(4n) {
-        background-color: var(--background);
-      }
 
       a {
         width: 100%;
         display: block;
+        padding: 10px 28px;
       }
-
     }
   }
 }
