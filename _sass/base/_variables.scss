@@ -19,8 +19,8 @@ $title-padding: 1%;
 $feature-image-padding: 10%;
 
 /* HERO
- * Shared floor heights for the two full-bleed feature-image heroes: the home call-out
- * (.call-out_img, _blog.scss) and the single-post hero (.post-feature header#main,
+ * Shared floor heights for the two full-bleed feature-image heroes: .hero (home and every
+ * page.liquid page - _blog.scss) and the single-post hero (.post-feature header#main,
  * _posts.scss). Both are sized by these rather than by whatever text happens to sit in
  * them, so the home hero matches a post's regardless of whether `header_text` is set.
  */

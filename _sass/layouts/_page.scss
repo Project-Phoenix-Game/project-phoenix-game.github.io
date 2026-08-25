@@ -1,7 +1,7 @@
 // Plain content pages (About, Search, and any other page.liquid page without its own
 // tags-page/categories-page/gallery-page treatment) now always get a full-bleed hero
-// (page.liquid's header carries .call-out/.call-out_img, same classes as the home hero -
-// _blog.scss) via site.header_feature_image, whether or not the page sets its own
+// (page.liquid's header carries .hero, same class as the home hero - _blog.scss) via
+// site.header_feature_image, whether or not the page sets its own
 // feature-img. Same "zero the article, let each section own its own inset" pattern as
 // article.tags-page/.categories-page/.gallery-page (_tags.scss/_categories.scss/
 // _gallery.scss): without it, the global `article { @extend .comments; }` rule

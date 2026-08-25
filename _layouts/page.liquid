@@ -2,7 +2,7 @@
 layout: default
 ---
 <article class="{% if page.layout == 'tags' %}tags-page{% elsif page.layout == 'categories' %}categories-page{% elsif page.gallery_path %}gallery-page{% else %}page-feature{% endif %}">
-    <header id="main" class="call-out call-out_img">
+    <header id="main" class="hero">
         <div class="hero-bg" style="background-image: url('{{ page.feature-img | default: site.header_feature_image | relative_url }}')"></div>
         <div class="title-padder">
             {% if page.hide_title %}

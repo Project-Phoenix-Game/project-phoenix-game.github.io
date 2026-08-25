@@ -1,19 +1,42 @@
-/* --- Header text feature --- */
-.call-out {
+/* --- Hero header: home + every page.liquid page (About/Gallery/Categories/Tags/Search) --- */
+// One class for the whole full-bleed image header, home and page.liquid alike - it used to be
+// split into .call-out (box/text styling) + .call-out_img (height floor, image fade), back
+// when a hero with no image at all was a real option. It no longer is (every hero always gets
+// an image, defaulting to site.header_feature_image - see page.liquid), so there was nothing
+// left for the split to actually gate.
+.hero {
   @extend %padding-header;
   position: relative;
+  overflow: hidden;
   display: inline-block;
   width: 100%;
   height: 100%;
   font-size: 1.2em;
   text-align: center;
   color: var(--header-text);
-  // Solid fallback only - the actual photo lives on .hero-bg below, not here (see its own
-  // comment for why).
-  background-color: var(--header-background);
   backdrop-filter: brightness(0.5);
-  overflow: hidden;
+  // Solid fallback only, in case .hero-bg's image is slow to load or missing - the actual
+  // photo lives there, not here (see its own comment for why).
+  background-color: var(--header-background);
 
+  // Height floor shared with the single-post hero (.post-feature header#main, _posts.scss) so
+  // every full-bleed hero across the site reads as the same band.
+  min-height: $hero-min-height;
+
+  @media screen and (min-width: $break) {
+    min-height: $hero-min-height-wide;
+  }
+
+  @media screen and (max-width: $sm-break) {
+    min-height: $hero-min-height-small;
+  }
+
+  // The sitewide `article header { margin-bottom: 6%; ... }` rule (_posts.scss) is meant for
+  // plain post/article headers - harmless to reset unconditionally here even for home's own
+  // <div> (which was never a `header` and never picked that rule up to begin with).
+  margin-bottom: 0;
+
+  // Sparkle overlay.
   &::before {
     content: '';
     position: absolute;
@@ -30,11 +53,22 @@
       radial-gradient(1px 1px at 50% 35%, rgba(255, 255, 255, 0.3), transparent);
   }
 
+  // Bottom-edge vignette: fades the image to var(--background) right at the hero's own
+  // bottom edge, so the hand-off into the page background below reads as one continuous fade
+  // instead of a hard cut. A separate ::after (not ::before, already the sparkle above).
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(to top, var(--background) 0%, rgba(35, 35, 35, .5) 30%, transparent 60%);
+  }
+
   h1, p {
     position: relative;
-    // Above .hero-bg and the .call-out_img::after fade below, neither of which have a
-    // z-index of their own (auto/-1) - a plain z-index: 1 here beats them regardless of
-    // paint/source order, same role .title-padder's z-index plays over the post hero's fade.
+    // Above .hero-bg (z-index: -1) and the ::before/::after above (z-index: auto, but both
+    // still behind normal-flow content) - z-index: 1 beats them regardless of paint order,
+    // same role .title-padder's z-index plays over the post hero's fade.
     z-index: 1;
   }
 
@@ -49,16 +83,12 @@
   }
 }
 
-// The actual photo, on its own layer instead of directly on .call-out/.call-out_img: sized
-// past the visible box on every edge (inset: -8%, clipped by .call-out's own overflow:hidden)
-// so background-size: cover - which crops just enough to fill the box and not a pixel more -
-// always has that extra 8% to crop into first. Without it, cover can end up needing barely
-// any crop at all whenever the box's own aspect ratio happens to land close to the image's
-// (it did, right around 1000px wide with the header at its $hero-min-height-wide floor),
-// which let the image's actual bottom edge show through - a hard cut to nothing, not a crop.
-// A single layer at every width instead of the old fixed-percentage-per-breakpoint chain
-// (170%/200%/250%/280%) also means no more sudden jump in zoom level while resizing across
-// those thresholds - cover already scales continuously on its own.
+// The actual photo, on its own layer instead of directly on .hero: sized past the visible box
+// on every edge (inset: -8%, clipped by .hero's own overflow: hidden) so background-size:
+// cover - which crops just enough to fill the box and not a pixel more - always has that
+// extra 8% to crop into first. Without it, cover can end up needing barely any crop at all
+// whenever the box's own aspect ratio happens to land close to the image's, which lets the
+// image's actual edge show through - a hard cut to nothing, not a crop.
 .hero-bg {
   position: absolute;
   inset: -8%;
@@ -66,62 +96,15 @@
   pointer-events: none;
   background-repeat: no-repeat;
   background-size: cover;
-}
-
-// Height floor shared with the single-post hero (.post-feature header#main, _posts.scss) so
-// the home hero reads as the same band as a post's cover image. Needed because .call-out is
-// otherwise sized entirely by %padding-header plus whatever text sits in it - with
-// `header_text` empty it collapses to just the padding. Scoped to .call-out_img (not plain
-// .call-out) since a hero with no image has nothing to give height to. Both heroes carry
-// #main's negative top margin below, so the same floor yields the same visible band.
-.call-out_img {
-  min-height: $hero-min-height;
-
-  @media screen and (min-width: $break) {
-    min-height: $hero-min-height-wide;
-  }
-
-  @media screen and (max-width: $sm-break) {
-    min-height: $hero-min-height-small;
-  }
-}
-
-// Same bottom-edge vignette as the post hero (.post-feature header#main::before in
-// _posts.scss): fades the image to var(--background) right at its own bottom edge, so the
-// hand-off into the page background below reads as one continuous fade instead of a hard
-// cut. A separate ::after (not ::before, already taken by .call-out's sparkle overlay above)
-// on .call-out_img specifically, since plain .call-out has no image/fade of its own.
-.call-out_img::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background: linear-gradient(to top, var(--background) 0%, rgba(35, 35, 35, .5) 30%, transparent 60%);
-}
-
-// Home's hero is a bare <div>, never touched by the sitewide `article header { margin-bottom:
-// 6%; ... }` rule (_posts.scss) - it was only ever meant for actual post/article headers.
-// This one (also a <header>, unlike home's <div>) sits inside an <article> though, so it
-// picks that rule up: a large gap of solid page-background opens up below the image, on top
-// of (and easy to mistake for part of) the fade above - zeroed to match home's own
-// (margin-free) hero exactly.
-header#main.call-out {
-  margin-bottom: 0;
+  // --parallax-offset is written by navbar.js's scroll listener (0px until the first scroll
+  // event fires), so scrolling down reveals more of the image's lower portion. Centered
+  // (not a right-aligned 100%) so the crop stays centered on screens narrower than the image.
+  background-position: center calc(-50px + var(--parallax-offset, 0px));
 }
 
 #main {
   margin-top: calc(var(--site-header-overlay-height, 96px) * -1);
   padding-top: calc(var(--site-header-overlay-height, 96px) + #{$padding-medium});
-
-  // --parallax-offset is written by navbar.js's scroll listener (0px until the first scroll
-  // event fires) - folded into the existing -50px baseline via calc() so scrolling down
-  // reveals more of the image's lower portion, same as it always has. X is `center` (not a
-  // right-aligned 100%) so the crop stays centered on screens narrower than the image,
-  // instead of always favoring the image's right edge. Lives on .hero-bg (the layer that
-  // actually carries the image now), not #main itself.
-  .hero-bg {
-    background-position: center calc(-50px + var(--parallax-offset, 0px)), 0 center, center top;
-  }
 }
 
 /* --- Post listing --- */
