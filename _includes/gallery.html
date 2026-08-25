@@ -7,12 +7,14 @@ html { overflow-y: scroll; }
 /* article {padding:2%;} */
 </style>
 
+{% assign gallery_count = 0 %}
 <div id='masonry' class="grid">
 <div class="grid-sizer"></div>
 <div class="gutter-sizer"></div>
 {% for image in site.static_files %}
   {% if image.path contains include.gallery_path %}
     {% unless image.path contains '.md' %}
+      {% assign gallery_count = gallery_count | plus: 1 %}
       {% assign filename = image.path | split: '/' | last %}
       {% assign entry = site.data.gallery[filename] %}
       {% assign base_name = filename | split: '.' | first | replace: '-', ' ' | replace: '_', ' ' | capitalize %}
@@ -34,6 +36,13 @@ html { overflow-y: scroll; }
   {% endif %}
 {% endfor %}
 </div>
+
+{% if gallery_count == 0 %}
+<div class="gallery-empty" data-testid="gallery-empty">
+  <p><strong>No visual logs on file.</strong></p>
+  <p>Concept art incoming - check back soon.</p>
+</div>
+{% endif %}
 </div>
 
 <dialog id="gallery-lightbox" class="gallery-lightbox" data-testid="gallery-lightbox" aria-label="Image viewer">

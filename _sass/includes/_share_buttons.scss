@@ -1,6 +1,8 @@
 ul.share-buttons {
   list-style: none;
-  padding: 1.5% 0 0.75% 0;
+  // Swapped with .tag-category-container's own padding (_tags.scss) now that share sits
+  // after it (post.liquid) instead of before.
+  padding-bottom: $padding-x-small;
   margin: 0;
   display: flex;
   flex-wrap: wrap;

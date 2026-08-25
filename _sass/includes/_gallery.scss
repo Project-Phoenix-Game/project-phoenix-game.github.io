@@ -17,6 +17,41 @@ article.gallery-page {
   border-top: 1px solid var(--border);
 }
 
+// Shown instead of the grid when gallery_path has no images (gallery.html) - same HUD-panel
+// treatment as #categories'/#tags' own .facet-empty, simplified: no JS-driven .is-active
+// toggle needed, since gallery.html decides whether to render this at build time rather than
+// in response to a live filter - and centered rather than left-aligned, since there's no
+// facet-rail sitting alongside it here to align against.
+//
+// Text stays at the default body size/color/font (same as .page-feature .post-content's own
+// text - _page.scss) rather than .facet-empty's muted, small monospace HUD caption: that's
+// tuned for a one-line status message next to a filter console, not a page's worth of actual
+// copy sitting alone as the page's only content.
+.gallery-empty {
+  position: relative;
+  z-index: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 10px;
+  padding: 34px 28px;
+  @include chamfer-outline(var(--border));
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: var(--code-background);
+    @include cut-corners(16px);
+  }
+
+  p {
+    margin: 0;
+  }
+}
+
 /* ---- grid ---- */
 
 .grid {

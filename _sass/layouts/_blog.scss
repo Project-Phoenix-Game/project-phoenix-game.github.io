@@ -119,6 +119,11 @@ header#main.hero {
   // whole declaration outright, dropping the clearance instead of just fixing the pixel value.
   padding-top: calc(var(--site-header-overlay-height, 96px) + 16px);
   padding-bottom: 16px;
+  // Divider flush against the hero's own bottom edge, same role the old border-top on
+  // .post-content used to play (_page.scss) before that became a properly-gutted card of its
+  // own (with a margin-top gap instead of sitting flush below the hero) - living here keeps
+  // that clean line right where the hero ends regardless of the gap.
+  border-bottom: 1px solid var(--border);
 
   @media screen and (max-width: $break) {
     min-height: $hero-min-height-small;

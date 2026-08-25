@@ -10,22 +10,7 @@
 #   the lightbox
 # - description: longer sentence - shown only in the lightbox, under the title
 
-book-glass.jpeg:
-  alt: "A stack of books beside a pair of reading glasses"
-  title: "Books & Reading Glasses"
-  description: "Sample image - swap in concept art once available."
-
-computer.jpeg:
-  alt: "Close-up of a laptop keyboard and screen"
-  title: "Laptop Close-Up"
-  description: "Sample image - swap in concept art once available."
-
-search-map.jpeg:
-  alt: "A magnifying glass resting on a paper map"
-  title: "Map & Magnifying Glass"
-  description: "Sample image - swap in concept art once available."
-
-travel.jpeg:
-  alt: "Travel essentials packed for a trip"
-  title: "Travel Essentials"
-  description: "Sample image - swap in concept art once available."
+# Empty for now - the placeholder stock photos (book-glass/computer/search-map/travel.jpeg)
+# that used to live here (and under assets/img/pexels/) were removed since they didn't
+# represent the actual game. Drop real screenshots/concept art into the folder configured
+# via `gallery_path` in pages/gallery.md and add an entry here per file, same as above.

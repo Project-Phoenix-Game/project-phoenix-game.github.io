@@ -232,6 +232,14 @@ header {
     // sits lower against the hero, closer to the fade instead of floating in the middle of it.
     padding-bottom: 0;
 
+    // Horizontal inset used to come from here (inherited from the plain .feature-image header
+    // rule above, sized off the header's own full-bleed width) - now zeroed out because
+    // .title-padder supplies its own inset via margin instead (below), matching
+    // .post-feature-card's %margin-post exactly rather than two independently-tuned
+    // percentage scales that only roughly lined up.
+    padding-left: 0;
+    padding-right: 0;
+
     // Own vignette is black-only now (not faded all the way to var(--background) as before) -
     // it exists purely to keep the title/badges/info text legible, so it only needs to cover
     // the bottom portion where that text actually sits, leaving much more of the image visible
@@ -252,10 +260,27 @@ header {
     }
   }
 
+  // Same %margin-post placeholder .post-feature-card extends below - sharing the literal
+  // placeholder (rather than a hand-copied percentage) is what guarantees this hero content
+  // block's own left/right edges land exactly on the card's own *outer* box edges, at every
+  // breakpoint, instead of two independently-maintained scales that only happened to look
+  // close. Vertical margin is cancelled straight back to 0 - title-padder's vertical position
+  // is still governed by header#main's own flex/padding, not by this.
+  // flex: 1 1 auto (not width: 100%) because title-padder is header#main's flex item now that
+  // the header itself has no horizontal padding to size against - width: 100% would add on
+  // top of the margin below and overflow the header by exactly that margin's width, so this
+  // still needs to be flex-grown to fill the *remaining* space instead.
   .title-padder {
     position: relative;
     z-index: 1;
-    width: 100%;
+    flex: 1 1 auto;
+    @extend %margin-post;
+    margin-top: 0;
+    margin-bottom: 0;
+    // Cancels the plain .title-padder rule's own padding: $title-padding (_page.scss, shared
+    // with About/Gallery/etc.) - only 1%, but it would otherwise sit on top of the margin
+    // above and pull the title row in narrower than the card's own outer edge.
+    padding: 0;
   }
 
   // Title + badges share one row (badges right-aligned) instead of stacking badges as
@@ -269,6 +294,27 @@ header {
     justify-content: space-between;
     flex-wrap: wrap;
     gap: 0.4em 1em;
+    // Row's own `gap` only spaces the title against the badges *inside* it - it does nothing
+    // for the clearance between this row and .post-info right below (title-padder has no gap
+    // of its own). At narrower widths the title wraps onto 2+ lines and the badges drop onto
+    // their own line too, so without this the row's last line and .post-info's author/date
+    // line end up right on top of each other with zero breathing room between them.
+    margin-bottom: 0.4em;
+
+    // Below $break, badges move under the title instead of beside it, left-aligned instead
+    // of right. A row-direction fix (e.g. reordering the badges ahead of the title so they
+    // land on the left) put the badges *above* the title whenever the row wrapped, since
+    // reordering changes which one renders first - flex-direction: column sidesteps that
+    // entirely: title and badges just stack in their own existing (DOM) order, title always
+    // first, with no dependency on whether/how the row would have wrapped in row mode.
+    // align-items: flex-start overrides the row rule's own flex-end (above) - in column mode
+    // that property governs the horizontal (cross-axis) alignment of the stacked children,
+    // not vertical, and flex-end there would right-anchor them instead of left-aligning.
+    @media screen and (max-width: $break) {
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: flex-start;
+    }
   }
 
   .post-feature__badges {
@@ -296,9 +342,9 @@ header {
   // Now the last element in the block (after title/badges/post_info) rather than right
   // under the title, so it lands at the very bottom of the bottom-anchored content - in the
   // ::before fade band, where the image is already blending into var(--code-background).
-  // width: 100% (of .title-padder, itself bounded by header's own horizontal padding) rather
-  // than a fixed short measure, so the line starts flush with the title's own left edge and
-  // fades out at the mirror-image distance from the right edge.
+  // width: 100% (of .title-padder, itself bounded by its own margin above) rather than a
+  // fixed short measure, so the line starts flush with the title's own left edge and fades
+  // out at the mirror-image distance from the right edge.
   .post-feature__line {
     height: 1px;
     width: 100%;
@@ -345,8 +391,9 @@ header {
   // The card itself now supplies the viewport-relative horizontal inset (via %margin-post
   // above), so .post-content only needs a modest fixed internal gutter for text legibility
   // against the card's own edges - not the large, viewport-relative %padding-post scale
-  // (that would double-indent the body text relative to the image). Vertical spacing
-  // (and padding-bottom: 0 from .feature-image) is left untouched.
+  // (that would double-indent the body text relative to the image). Vertical spacing (and
+  // padding-bottom: 0 from .feature-image) is left untouched - see p:last-child below for
+  // why the last line needs clearance from .post-feature-card__index instead.
   .post-content {
     padding-left: $padding-medium;
     padding-right: $padding-medium;
@@ -355,12 +402,21 @@ header {
       padding-left: $padding-small;
       padding-right: $padding-small;
     }
+
+    // .feature-image's own padding-bottom: 0 (_posts.scss) puts the text's last line right at
+    // the card's bottom edge, with nothing keeping it clear of .post-feature-card__index
+    // overhanging that same edge (below) - margin here (not padding on the container) so it's
+    // the text's own trailing space, same as the 1em every other paragraph already gets
+    // between itself and the one after it (_global.scss).
+    p:last-child {
+      margin-bottom: 32px;
+    }
   }
 
-  // Chamfered post-number badge, overhanging the card's bottom-left corner.
+  // Chamfered post-number badge, overhanging the card's bottom-right corner.
   .post-feature-card__index {
     position: absolute;
-    left: 14px;
+    right: 14px;
     bottom: -12px;
     z-index: 2;
     padding: 4px 12px;
@@ -372,7 +428,7 @@ header {
     @include cut-corners(8px);
 
     @media screen and (max-width: $sm-break) {
-      left: 10px;
+      right: 10px;
       bottom: -10px;
       padding: 3px 9px;
       font-size: 0.72em;

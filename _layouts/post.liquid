@@ -45,9 +45,6 @@ layout: default
         <span class="post-feature-card__index" data-testid="post-index" aria-label="Post number">#{{ _post_number | strip }}</span>
     </div>
 
-    <!-- Social media shares -->
-    {% include social/share_buttons.liquid %}
-
     <!-- Category and Tag list -->
     <div class="tag-category-container">
         <!-- Category list -->
@@ -58,6 +55,9 @@ layout: default
         {% capture tag_list %}{{ page.tags | join: "|" }}{% endcapture %}
         {% include default/tags_list.liquid tags=tag_list %}
     </div>
+
+    <!-- Social media shares -->
+    {% include social/share_buttons.liquid %}
 
 </article>
 

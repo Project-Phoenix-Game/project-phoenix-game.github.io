@@ -10,17 +10,35 @@
 .page-feature {
   padding: 0;
 
+  // Same chamfered-panel treatment as the empty states on Gallery/Tags/Categories
+  // (.gallery-empty/.facet-empty - _gallery.scss/_categories.scss/_tags.scss): a
+  // var(--code-background) card with cut corners and an outlined border, instead of a plain
+  // border-top divider with text sitting bare on the page's own (darker) --background.
+  // Doesn't reuse their color/font-family/font-size, though - those are tuned for a short,
+  // muted HUD-style status caption, not a full page of actual body text.
+  //
+  // %margin-post (not %padding-post): #gallery/#tags/#categories can use %padding-post
+  // directly because their own empty-state card sits *inside* them, inheriting that inset for
+  // free - .post-content has no such wrapper, so it needs its own gutter from the viewport
+  // edge as an actual margin outside the card, with a fixed, modest padding inside it (same
+  // 34px/28px .gallery-empty itself uses) for the text's own breathing room - not the same
+  // %padding-post percentage doing double duty as both, which left the card spanning
+  // practically the full article width with no visible margin around it at all.
   .post-content {
-    @extend %padding-post;
-    // Divider under the hero, matching #tags/#categories/#gallery's own
-    // border-top (_tags.scss/_categories.scss/_gallery.scss) - those consoles
-    // draw it themselves, but plain content (About, Search, ...) has no such
-    // wrapper to carry it, so .post-content needs it directly.
-    border-top: 1px solid var(--border);
-  }
+    @extend %margin-post;
+    position: relative;
+    z-index: 0;
+    padding: 34px 28px;
+    @include chamfer-outline(var(--border));
 
-  .tag-category-container {
-    @extend %padding-post;
+    &::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      background: var(--code-background);
+      @include cut-corners(16px);
+    }
   }
 }
 
@@ -30,7 +48,7 @@
 
 h1.title {
   @extend .subtle-txt-shadow;
-  padding: 0.5em 0;
+  padding: 0.25em 0;
 }
 
 .post-content.about-centered {

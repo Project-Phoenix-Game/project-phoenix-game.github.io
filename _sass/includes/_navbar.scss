@@ -38,6 +38,12 @@
 
   a {
     color: var(--header-link);
+    // Now that the header has no background fill of its own (just the backdrop blur - see
+    // above), a light/white section of the page scrolled behind it can leave this text (and
+    // .site-title's gradient fill below, which is an <a> too and matches this same selector -
+    // text-shadow isn't reset by its own more specific color: transparent) hard to read.
+    // A slight dark shadow keeps it legible against any background without needing a fill.
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.7);
   }
 
   .site-title {
@@ -52,6 +58,10 @@
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
+    // text-shadow (inherited from the shared `a` rule above) doesn't render reliably against
+    // a background-clip: text fill - reverted just for this element, back to relying on its
+    // own filter: drop-shadow() glow below for contrast instead.
+    text-shadow: none;
     filter: drop-shadow(0 0 10px var(--accent-glow));
 
     @media (prefers-reduced-motion: no-preference) {

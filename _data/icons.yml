@@ -1,5 +1,14 @@
 # For the Icons on the footer of the website
 # For the Share buttons at the end of the articles, use the "social.yml"
+# discord isn't one of the theme's own pre-built brands (icons_builder.yml has no pre/pos
+# template for it), so the value here is the full invite URL rather than just an id/username -
+# icons_builder[brand] resolves to nil for any brand it doesn't know, so `data.pre | append: id
+# | append: data.pos` (icons.liquid) collapses to just this string unchanged. The icon itself
+# still resolves correctly either way, via icons.liquid's own fallback to "fab fa-<brand>" when
+# there's no icons_builder entry (fab fa-discord is in the site's bundled Font Awesome set).
+# Listed first so it renders before RSS (icons.liquid puts this whole list before the RSS
+# icon, unconditionally).
+discord: "https://discord.gg/PWSgYcGMhe"
 behance:
 bitbucket:
 calendly:
