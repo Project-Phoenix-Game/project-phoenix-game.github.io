@@ -76,7 +76,7 @@ Alongside commendations, your profile keeps a record of **how and when you've po
 
 When you look at another player, you can see your own shared history with them at a glance. Have we done this before? Did it go well? When was the last time? For a game where you're constantly encountering people in clusters and Expeditions and then losing track of them, this is straightforwardly useful – it means "do I know this person?" has an answer.
 
-![Player Dossier-Interaction History@2x.png](../assets/img/post-figures/post-3/Player%20Dossier-Interaction%20History%402x.png) *UI Example - Not current*
+{% include aligner.html images="post-figures/post-3/Player Dossier-Interaction History@2x.png" caption="Player dossier – interaction history (UI example, not current)" %}
 
 ### The Social Graph
 
@@ -86,7 +86,7 @@ If you're evaluating a stranger, the commendations from your own friends, allian
 
 This is how reputation works among people anyway. You don't consult an aggregate score – you ask someone you know. We're just making that legible in the interface.
 
-![Player Dossier-Social Graph@2x.png](../assets/img/post-figures/post-3/Player%20Dossier-Social%20Graph%402x.png) *UI Example - Not current*
+{% include aligner.html images="post-figures/post-3/Player Dossier-Social Graph@2x.png" caption="Player dossier – social graph (UI example, not current)" %}
 
 ### What This Deliberately Cannot Do
 
