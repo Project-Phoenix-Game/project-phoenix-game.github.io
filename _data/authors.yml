@@ -6,6 +6,10 @@ helene:
   name: "Hélène"
   avatar: "assets/img/authors/helene.png"
   url:
+victor:
+  name: "Victor"
+  avatar: "assets/img/authors/victor.png"
+  url:
 unknown:
   name: Unknown
   avatar:
