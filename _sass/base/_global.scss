@@ -191,6 +191,13 @@ footer *:last-child {
   margin-bottom: 0;
 }
 
+// No bottom margin at all on paragraphs inside a blockquote (not just the last one) - the
+// blockquote's own padding already supplies the spacing, so the 1em between paragraphs read as
+// excessive.
+blockquote p {
+  margin-bottom: 0;
+}
+
 table {
   word-wrap: break-word;
   table-layout: fixed;

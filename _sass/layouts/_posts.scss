@@ -421,8 +421,10 @@ header {
     // the card's bottom edge, with nothing keeping it clear of .post-feature-card__index
     // overhanging that same edge (below) - margin here (not padding on the container) so it's
     // the text's own trailing space, same as the 1em every other paragraph already gets
-    // between itself and the one after it (_global.scss).
-    p:last-child {
+    // between itself and the one after it (_global.scss). Direct child only (`>`): a bare
+    // `p:last-child` also matched the last paragraph inside a blockquote/list item, handing it
+    // this 32px too (and out-specifying the blockquote p reset in _global.scss).
+    > p:last-child {
       margin-bottom: 32px;
     }
   }
